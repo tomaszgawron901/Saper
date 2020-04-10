@@ -1,0 +1,31 @@
+.BorderedContainer {
+  border-width: 3px;
+  border-style: solid;
+  border-top-color: white;
+  border-left-color: white;
+  border-bottom-color: rgb(110, 110, 110);
+  border-right-color: rgb(110, 110, 110);
+  background-color: rgb(196, 196, 196);
+}
+
+.NonBorderedContainer {
+  border: solid 1px rgb(85, 85, 85);
+  background-color: rgb(172, 172, 172);;
+}
+
+.CellContainer{
+  width: 40px;
+  height: 40px;
+}
+
+.CellEnabled{
+  background-color: rgb(196, 196, 196);
+}
+
+.CellEnabled:hover{
+  background-color: rgb(145, 145, 145);
+}
+
+body {
+  background-color: grey;
+}
