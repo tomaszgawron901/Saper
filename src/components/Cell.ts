@@ -14,13 +14,19 @@ export default class Cell extends Clickable implements IComponent{
         super();
         this.element = document.createElement('DIV');
         this.element.classList.add("BorderedContainer");
+        this.element.classList.add("CellInterior");
+        this.element.classList.add("CellEnabled");
         this.element.addEventListener('click', ()=>{this.Clicked()});
 
         this.ViewType = CellViewTypes.unopened;
         this.Value = Value;
     }
 
-    
+    public Reset = () => {
+        this.element.classList.add("BorderedContainer");
+        this.ViewType = CellViewTypes.unopened;
+        this.Enable();
+    }
 
     public Open = () => {
         if(this.ViewType == CellViewTypes.opened) {
