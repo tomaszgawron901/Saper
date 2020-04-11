@@ -10,7 +10,7 @@ export default class Cell extends Clickable implements IComponent{
     private element: HTMLElement;
     private ViewType: CellViewTypes;
     private Value: number;
-    constructor(Value: number) {
+    constructor() {
         super();
         this.element = document.createElement('DIV');
         this.element.classList.add("BorderedContainer");
@@ -19,7 +19,6 @@ export default class Cell extends Clickable implements IComponent{
         this.element.addEventListener('click', ()=>{this.Clicked()});
 
         this.ViewType = CellViewTypes.unopened;
-        this.Value = Value;
     }
 
     public Reset(){
