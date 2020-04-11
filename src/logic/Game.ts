@@ -1,4 +1,18 @@
 
+export class Position{
+    public x: number;
+    public y: number;
+
+    public constructor(x: number, y: number){
+        this.x = x;
+        this.y = y;
+    }
+    
+    public Equals = (other: Position) => {
+        return this.x == other.x && this.y == other.y;
+    }
+}
+
 export default class Game{
     private size: {x: number, y: number};
     private numberOfBombs: number;
@@ -18,49 +32,85 @@ export default class Game{
         this.size = size;
         this.numberOfBombs = numberOfBombs;
         this.firstClick = true;
+
+        this.board = new Array<number>(this.size.x*this.size.y);
     }
 
-    private BoardIndexOf = (position: {x: number, y: number}) => {
-        return position.x+position.y*(this.size.x+1);
+    private BoardIndexOf = (position: Position) => {
+        return position.x+position.y*this.size.x;
     }
 
-    private IsInsside = (position: {x: number, y: number}) => {
+    private IsInsside = (position: Position) => {
         return position.x >= 0 && position.x < this.size.x && position.y >= 0 && position.y < this.size.y;
     }
 
-    private IsUnOpened = (position: {x: number, y: number}) => {
+    private IsUnOpened = (position: Position) => {
         return this.board[this.BoardIndexOf(position)] >= 0;
     }
 
+    private IsBomb = (position: Position) => {
+        return this.board[this.BoardIndexOf(position)] == 9;
+    }
 
-    private GetUnopenedNeighborIndexes = (position: {x: number, y: number}) => {
-        const output = new Array<number>();
+    private SetValue = (position: Position, value: number) => {
+        this.board[this.BoardIndexOf(position)] = value;
+    }
+
+    private GetMatrix = (position: Position) => {
+        const output = new Array<Position>();
         for(var i = position.x-1; i <= position.x +1; i++)
         {
             for(var j = position.y-1; j <= position.y +1; j++)
             {
-                var position = {x: i, y: j};
-                if(this.IsInsside( position ) && this.IsUnOpened(position)){
-                    output.push(this.BoardIndexOf(position));
+                var neighborPosition = new Position(i, j);
+                if(this.IsInsside( neighborPosition )){
+                    output.push(neighborPosition);
                 }
             }
         }
         return output;
     }
 
-    public Open = (position: {x: number, y: number}) => {
-        if(this.firstClick){
-            this.GenerateMap(position);
-        }
+    private GetNeighborPositions = (position: Position) => {
+        return this.GetMatrix(position).filter(pos => !pos.Equals(position));
     }
 
-    private GenerateMap = (firstClickPosition: {x: number, y: number}) => {
-        this.PlaceBombs(this.GetUnopenedNeighborIndexes(firstClickPosition));
+    private GetUnopenedNeighborPosition = (position: Position) => {
+        const output = new Array<Position>();
+        this.GetNeighborPositions(position).forEach(neighborPosition => {
+            if(this.IsUnOpened(neighborPosition)) {
+                output.push(neighborPosition);
+            }
+        });
+        return output;
+    }
 
+    private GetNumberOfAdjacentBombs = (position: Position) =>{
+        var sum = 0;
+        this.GetNeighborPositions(position).forEach(neighborPosition => {
+            if(this.IsBomb(neighborPosition)) {
+                sum += 1;
+            }
+        });
+        return sum;
+    }
+
+    public Open = (position: Position) => {
+        if(this.firstClick){
+            this.GenerateMap(position);
+            this.firstClick = false;
+        }
+        // TODO - cell opening
+    }
+
+    private GenerateMap = (firstClickPosition: Position) => {
+        const excludedIndexes = this.GetMatrix(firstClickPosition).map(this.BoardIndexOf)
+        this.PlaceBombs(excludedIndexes);
+        this.CalculateNeighborBombs();
     }
 
     private PlaceBombs = (excludedIndexes: number[]) => {
-        this.bombIndexes = new Array<number>(this.numberOfBombs);
+        this.bombIndexes = new Array<number>();
         const indexes = new Array<number>();
         var indexMax = this.size.x * this.size.y - 1;
         for(var i =0; i <= indexMax; i++){
@@ -73,7 +123,7 @@ export default class Game{
             var randomIndex = Math.floor(Math.random() * indexMax);
 
             this.board[randomIndex] = 9;
-            this.bombIndexes.push();
+            this.bombIndexes.push(randomIndex);
 
             var tmp = indexes[randomIndex];
             indexes[randomIndex] = indexes[indexMax];
@@ -84,5 +134,15 @@ export default class Game{
 
     }
 
-
+    private CalculateNeighborBombs = () => {
+        for(var i = 0; i < this.size.x; i++) {
+            for( var j =0; j < this.size.y; j++ ) {
+                const position = new Position(i, j);
+                const index = this.BoardIndexOf(position);
+                if(!this.IsBomb(position)){
+                    this.SetValue(position, this.GetNumberOfAdjacentBombs(position))
+                }
+            }
+        }
+    }
 }
