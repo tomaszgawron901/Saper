@@ -11,12 +11,12 @@ export default abstract class Clickable {
     /**
      * @returns Function which removes given event listener.
      */
-    public AddOnClickListener = (func: ()=>void) =>{
+    public AddOnClickListener(func: ()=>void){
         this.listeners.push(func);
         return () => {delete this.listeners[this.listeners.indexOf(func)]};
     }
 
-    protected Clicked = () => {
+    protected Clicked(){
         if(this.Enabled){
             this.listeners.forEach(listener => {
                 listener();
@@ -24,11 +24,11 @@ export default abstract class Clickable {
         }
     }
 
-    public Enable = () => {
+    public Enable(){
         this.Enabled = true;
     }
 
-    public Disable = () => {
+    public Disable(){
         this.Enabled = false;
     }
 }

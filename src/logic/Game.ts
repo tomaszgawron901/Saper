@@ -8,7 +8,7 @@ export class Position{
         this.y = y;
     }
     
-    public Equals = (other: Position) => {
+    public Equals(other: Position){
         return this.x == other.x && this.y == other.y;
     }
 }
@@ -36,27 +36,27 @@ export default class Game{
         this.board = new Array<number>(this.size.x*this.size.y);
     }
 
-    private BoardIndexOf = (position: Position) => {
+    private BoardIndexOf(position: Position){
         return position.x+position.y*this.size.x;
     }
 
-    private IsInsside = (position: Position) => {
+    private IsInsside(position: Position){
         return position.x >= 0 && position.x < this.size.x && position.y >= 0 && position.y < this.size.y;
     }
 
-    private IsUnOpened = (position: Position) => {
+    private IsUnOpened(position: Position){
         return this.board[this.BoardIndexOf(position)] >= 0;
     }
 
-    private IsBomb = (position: Position) => {
+    private IsBomb(position: Position){
         return this.board[this.BoardIndexOf(position)] == 9;
     }
 
-    private SetValue = (position: Position, value: number) => {
+    private SetValue(position: Position, value: number){
         this.board[this.BoardIndexOf(position)] = value;
     }
 
-    private GetMatrix = (position: Position) => {
+    private GetMatrix(position: Position){
         const output = new Array<Position>();
         for(var i = position.x-1; i <= position.x +1; i++)
         {
@@ -71,11 +71,11 @@ export default class Game{
         return output;
     }
 
-    private GetNeighborPositions = (position: Position) => {
+    private GetNeighborPositions(position: Position){
         return this.GetMatrix(position).filter(pos => !pos.Equals(position));
     }
 
-    private GetUnopenedNeighborPosition = (position: Position) => {
+    private GetUnopenedNeighborPosition(position: Position){
         const output = new Array<Position>();
         this.GetNeighborPositions(position).forEach(neighborPosition => {
             if(this.IsUnOpened(neighborPosition)) {
@@ -85,7 +85,7 @@ export default class Game{
         return output;
     }
 
-    private GetNumberOfAdjacentBombs = (position: Position) =>{
+    private GetNumberOfAdjacentBombs(position: Position){
         var sum = 0;
         this.GetNeighborPositions(position).forEach(neighborPosition => {
             if(this.IsBomb(neighborPosition)) {
@@ -95,7 +95,7 @@ export default class Game{
         return sum;
     }
 
-    public Open = (position: Position) => {
+    public Open(position: Position){
         if(this.firstClick){
             this.GenerateMap(position);
             this.firstClick = false;
@@ -103,13 +103,13 @@ export default class Game{
         // TODO - cell opening
     }
 
-    private GenerateMap = (firstClickPosition: Position) => {
-        const excludedIndexes = this.GetMatrix(firstClickPosition).map(this.BoardIndexOf)
+    private GenerateMap(firstClickPosition: Position){
+        const excludedIndexes = this.GetMatrix(firstClickPosition).map(position => this.BoardIndexOf(position) )
         this.PlaceBombs(excludedIndexes);
         this.CalculateNeighborBombs();
     }
 
-    private PlaceBombs = (excludedIndexes: number[]) => {
+    private PlaceBombs(excludedIndexes: number[]){
         this.bombIndexes = new Array<number>();
         const indexes = new Array<number>();
         var indexMax = this.size.x * this.size.y - 1;
@@ -134,7 +134,7 @@ export default class Game{
 
     }
 
-    private CalculateNeighborBombs = () => {
+    private CalculateNeighborBombs(){
         for(var i = 0; i < this.size.x; i++) {
             for( var j =0; j < this.size.y; j++ ) {
                 const position = new Position(i, j);

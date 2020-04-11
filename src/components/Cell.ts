@@ -22,13 +22,13 @@ export default class Cell extends Clickable implements IComponent{
         this.Value = Value;
     }
 
-    public Reset = () => {
+    public Reset(){
         this.element.classList.add("BorderedContainer");
         this.ViewType = CellViewTypes.unopened;
         this.Enable();
     }
 
-    public Open = () => {
+    public Open(){
         if(this.ViewType == CellViewTypes.opened) {
             return;
         }
@@ -37,21 +37,23 @@ export default class Cell extends Clickable implements IComponent{
         this.Disable();
     }
 
-    public Enable = () => {
+    public Enable(){
         if(!this.element.classList.contains("CellEnabled")){
             this.element.classList.add("CellEnabled");
         }
         super.Enable()
     }
 
-    public Disable = () => {
+    public Disable(){
         if(this.element.classList.contains("CellEnabled")){
             this.element.classList.remove("CellEnabled");
+            this.element.classList.remove("BorderedContainer");
+            this.element.classList.add("NonBorderedContainer");
         }
-        super.Disable()
+        super.Disable();
     }
 
-    public GetComponent = () =>{
+    public GetComponent(){
         
         const container = document.createElement('DIV');
         container.classList.add('CellContainer');
