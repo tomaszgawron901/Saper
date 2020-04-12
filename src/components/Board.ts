@@ -40,7 +40,6 @@ export default class Board extends Clickable implements IComponent{
 
     public GetComponent() {
         const container = document.createElement('DIV');
-        container.classList.add("ReversedBorderedContainer");
         container.classList.add("BoardContainer");
         for(var y = 0; y < this.size.height; y++){
             const row = document.createElement('DIV');
