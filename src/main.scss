@@ -8,6 +8,16 @@
   background-color: rgb(196, 196, 196);
 }
 
+.ReversedBorderedContainer {
+  border-width: 3px;
+  border-style: solid;
+  border-top-color: rgb(110, 110, 110);
+  border-left-color: rgb(110, 110, 110);
+  border-bottom-color: white;
+  border-right-color: white;
+  background-color: rgb(196, 196, 196);
+}
+
 .NonBorderedContainer {
   border: solid 1px rgb(85, 85, 85);
   background-color: rgb(172, 172, 172);;
@@ -30,6 +40,16 @@
 
 .CellEnabled:hover{
   background-color: rgb(180, 180, 180);
+}
+
+.BoardRow {
+  display: flex;
+  flex-direction: row;
+}
+
+.BoardContainer{
+  width: fit-content;
+  height: fit-content;
 }
 
 body {
