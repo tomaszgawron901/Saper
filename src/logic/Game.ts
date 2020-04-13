@@ -108,7 +108,7 @@ export default class Game{
 
     public Open(position: Position){ // TODO cascade opening not implemented.
         if(this.firstClick){
-            this.GenerateMap(position); // TODO map generator does not work properly.
+            this.GenerateMap(position);
             this.firstClick = false;
         }
         const OpenEventHandler = this.eventManager.GetEventHandler(GameEvents.open) as EventHandler<OnOpenArgs>;
@@ -140,11 +140,12 @@ export default class Game{
                 indexes.push(i);
             }
         }
+        indexMax -= excludedIndexes.length;
 
         while(this.bombIndexes.length < this.numberOfBombs){
             var randomIndex = Math.floor(Math.random() * indexMax);
 
-            this.board[randomIndex] = 9;
+            this.board[indexes[randomIndex]] = 9;
             this.bombIndexes.push(randomIndex);
 
             var tmp = indexes[randomIndex];
