@@ -3,7 +3,7 @@ import EventHandler from '../events/EventHandler';
 import Position from './Position';
 
 export interface OnOpenArgs{
-    position: Position;
+    index: number;
     value: number;
 }
 
@@ -112,7 +112,7 @@ export default class Game{
             this.firstClick = false;
         }
         const OpenEventHandler = this.eventManager.GetEventHandler(GameEvents.open) as EventHandler<OnOpenArgs>;
-        const args: OnOpenArgs = {position: position, value: this.board[this.BoardIndexOf(position)]}
+        const args: OnOpenArgs = {index: this.BoardIndexOf(position), value: this.board[this.BoardIndexOf(position)]}
         OpenEventHandler.ExecuteListeners(args);
     }
 

@@ -12,7 +12,7 @@ g.board.AddOnClickListener((args: OnCellClickArgs) => {
 });
 
 (game.GetEventHandler(GameEvents.open) as EventHandler<OnOpenArgs>).AddEventListener( (args: OnOpenArgs) => {
-    console.log(args.position.ToString(), args.value);
+    console.log(args.index, args.value);
     
 } )
 document.body.appendChild(g.GetComponent());
