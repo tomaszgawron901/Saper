@@ -1,24 +1,27 @@
-import GameOnOpenEventManager, { OnOpenEventArgs } from './GameEventManager';
+import EventManager from '../events/EventManager';
+import EventHandler from '../events/EventHandler';
+import Position from './Position';
 
-export class Position{
-    public x: number;
-    public y: number;
+export interface OnOpenArgs{
+    position: Position;
+    value: number;
+}
 
-    public constructor(x: number, y: number){
-        this.x = x;
-        this.y = y;
-    }
-    
-    public Equals(other: Position){
-        return this.x == other.x && this.y == other.y;
-    }
+export interface OnWinArgs{}
+
+export interface OnDefeatArgs{}
+
+export enum GameEvents{
+    open = "open",
+    win = "win",
+    defeat = "defeat"
 }
 
 export default class Game{
     private size: {width: number, height: number};
     private numberOfBombs: number;
     private firstClick: boolean;
-    private onOpenEventManager: GameOnOpenEventManager
+    private eventManager: EventManager;
 
     /*
      * Meaning of numbers inside board.
@@ -34,9 +37,14 @@ export default class Game{
         this.size = size;
         this.numberOfBombs = numberOfBombs;
         this.firstClick = true;
-        this.onOpenEventManager = new GameOnOpenEventManager();
+        this.eventManager = new EventManager();
+        this.eventManager.AddEventHandler<OnOpenArgs>(GameEvents.open);
 
         this.board = new Array<number>(this.size.width*this.size.height);
+    }
+
+    public GetEventHandler( event: GameEvents ) {
+        return this.eventManager.GetEventHandler(event);
     }
 
     private BoardIndexOf(position: Position){
@@ -98,17 +106,14 @@ export default class Game{
         return sum;
     }
 
-    public Open(position: Position){
+    public Open(position: Position){ // TODO cascade opening not implemented.
         if(this.firstClick){
-            this.GenerateMap(position);
+            this.GenerateMap(position); // TODO map generator does not work properly.
             this.firstClick = false;
         }
-        const openIndex = this.BoardIndexOf(position);
-
-
-        const opened = new Array<{index: number, value: number}>();
-        this.CascadeOpen(position, opened);
-        return opened;
+        const OpenEventHandler = this.eventManager.GetEventHandler(GameEvents.open) as EventHandler<OnOpenArgs>;
+        const args: OnOpenArgs = {position: position, value: this.board[this.BoardIndexOf(position)]}
+        OpenEventHandler.ExecuteListeners(args);
     }
 
     /**
