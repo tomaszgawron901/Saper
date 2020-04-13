@@ -1,13 +1,12 @@
 import IComponent from './IComponent';
-import Clickable, {EventArgs} from './Clickable';
+import Clickable from './Clickable';
 import Cell from './Cell';
 
-export interface BoardElementClickArgs extends EventArgs{
+export interface OnCellClickArgs{
     x: number;
     y: number;
 }
-
-export default class Board extends Clickable implements IComponent{
+export default class Board extends Clickable<OnCellClickArgs> implements IComponent{
 
     private cells: Cell[];
     private size: {width: number, height: number};

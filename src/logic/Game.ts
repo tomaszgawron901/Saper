@@ -1,3 +1,4 @@
+import GameOnOpenEventManager, { OnOpenEventArgs } from './GameEventManager';
 
 export class Position{
     public x: number;
@@ -14,9 +15,10 @@ export class Position{
 }
 
 export default class Game{
-    private size: {x: number, y: number};
+    private size: {width: number, height: number};
     private numberOfBombs: number;
     private firstClick: boolean;
+    private onOpenEventManager: GameOnOpenEventManager
 
     /*
      * Meaning of numbers inside board.
@@ -28,20 +30,21 @@ export default class Game{
     private board: number[];
     private bombIndexes: number[];
 
-    public constructor(size: {x: number, y: number}, numberOfBombs: number){
+    public constructor(size: {width: number, height: number}, numberOfBombs: number){
         this.size = size;
         this.numberOfBombs = numberOfBombs;
         this.firstClick = true;
+        this.onOpenEventManager = new GameOnOpenEventManager();
 
-        this.board = new Array<number>(this.size.x*this.size.y);
+        this.board = new Array<number>(this.size.width*this.size.height);
     }
 
     private BoardIndexOf(position: Position){
-        return position.x+position.y*this.size.x;
+        return position.x+position.y*this.size.width;
     }
 
     private IsInsside(position: Position){
-        return position.x >= 0 && position.x < this.size.x && position.y >= 0 && position.y < this.size.y;
+        return position.x >= 0 && position.x < this.size.width && position.y >= 0 && position.y < this.size.height;
     }
 
     private IsUnOpened(position: Position){
@@ -100,7 +103,21 @@ export default class Game{
             this.GenerateMap(position);
             this.firstClick = false;
         }
-        // TODO - cell opening
+        const openIndex = this.BoardIndexOf(position);
+
+
+        const opened = new Array<{index: number, value: number}>();
+        this.CascadeOpen(position, opened);
+        return opened;
+    }
+
+    /**
+     * @param position Make sure that cell at given position is not bomb.
+     * @param opened Array of opeend cells.
+     */
+    private CascadeOpen(position: Position, opened: Array<{index: number, value: number}>){
+        const neighbors = this.GetUnopenedNeighborPosition(position);
+
     }
 
     private GenerateMap(firstClickPosition: Position){
@@ -112,7 +129,7 @@ export default class Game{
     private PlaceBombs(excludedIndexes: number[]){
         this.bombIndexes = new Array<number>();
         const indexes = new Array<number>();
-        var indexMax = this.size.x * this.size.y - 1;
+        var indexMax = this.size.width * this.size.height - 1;
         for(var i =0; i <= indexMax; i++){
             if(!excludedIndexes.includes(i)){
                 indexes.push(i);
@@ -135,8 +152,8 @@ export default class Game{
     }
 
     private CalculateNeighborBombs(){
-        for(var i = 0; i < this.size.x; i++) {
-            for( var j =0; j < this.size.y; j++ ) {
+        for(var i = 0; i < this.size.width; i++) {
+            for( var j =0; j < this.size.height; j++ ) {
                 const position = new Position(i, j);
                 const index = this.BoardIndexOf(position);
                 if(!this.IsBomb(position)){
@@ -145,4 +162,6 @@ export default class Game{
             }
         }
     }
+
+
 }

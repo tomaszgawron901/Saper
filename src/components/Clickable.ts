@@ -1,27 +1,26 @@
-export interface EventArgs {}
+import EventManager from '../events/EventManager';
 
-export default abstract class Clickable {
-    private listeners: Array<(args?: EventArgs) => void>;
+
+export default abstract class Clickable<T> {
+    private eventManager: EventManager;
     private Enabled: boolean;
 
     public constructor(){
-        this.listeners = new Array<(args?: EventArgs) => void>();
+        this.eventManager = new EventManager();
+        this.eventManager.AddEventHandler<T>("click");
         this.Enabled = true;
     }
 
     /**
      * @returns Function which removes given event listener.
      */
-    public AddOnClickListener(func: (args?: EventArgs)=>void){
-        this.listeners.push(func);
-        return () => {delete this.listeners[this.listeners.indexOf(func)]};
+    public AddOnClickListener(func: (args?: T)=>void){
+        return this.eventManager.GetEventHandler("click").AddEventListener(func);
     }
 
-    protected Clicked(args?: EventArgs){
+    protected Clicked(args?: T){
         if(this.Enabled){
-            this.listeners.forEach(listener => {
-                listener(args);
-            });
+            this.eventManager.GetEventHandler("click").ExecuteListeners(args);
         }
     }
 

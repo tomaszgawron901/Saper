@@ -6,7 +6,9 @@ export enum CellViewTypes{
     opened
 }
 
-export default class Cell extends Clickable implements IComponent{
+
+
+export default class Cell extends Clickable<null> implements IComponent{
     private element: HTMLElement;
     private ViewType: CellViewTypes;
     private Value: number;
