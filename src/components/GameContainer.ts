@@ -30,6 +30,7 @@ export default class GameContainer implements IComponent {
         const container = document.createElement('DIV');
         container.classList.add("GameContainer");
         container.classList.add("BorderedContainer");
+        container.addEventListener('contextmenu', event => event.preventDefault());
 
         container.appendChild(this.headConteiner);
         container.appendChild(this.boardContainer);
