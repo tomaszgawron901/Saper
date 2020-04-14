@@ -1,41 +1,26 @@
 import IComponent from './IComponent';
 import Clickable from './Clickable'
 
-export enum CellViewTypes{
-    unopened,
-    opened
+export enum CellClickTypes{
+    rightClick,
+    leftClick
 }
 
-
-
-export default class Cell extends Clickable<null> implements IComponent{
+export default class Cell extends Clickable<CellClickTypes> implements IComponent{
     private element: HTMLElement;
-    private ViewType: CellViewTypes;
-    private Value: number;
     constructor() {
         super();
         this.element = document.createElement('DIV');
         this.element.classList.add("BorderedContainer");
         this.element.classList.add("CellInterior");
         this.element.classList.add("CellEnabled");
-        this.element.addEventListener('click', ()=>{this.Clicked()});
-
-        this.ViewType = CellViewTypes.unopened;
+        this.element.addEventListener('click', ()=>{this.Clicked(CellClickTypes.leftClick)});
+        this.element.addEventListener('contextmenu', ()=>{this.Clicked(CellClickTypes.rightClick)});
     }
 
     public Reset(){
         this.element.classList.add("BorderedContainer");
-        this.ViewType = CellViewTypes.unopened;
         this.Enable();
-    }
-
-    public Open(){
-        if(this.ViewType == CellViewTypes.opened) {
-            return;
-        }
-        this.ViewType = CellViewTypes.opened;
-        this.element.classList.replace("BorderedContainer", "NonBorderedContainer");
-        this.Disable();
     }
 
     public Enable(){
