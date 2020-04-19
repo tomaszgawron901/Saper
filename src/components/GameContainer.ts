@@ -38,4 +38,9 @@ export default class GameContainer implements IComponent {
         return container;
     }
 
+    public Reset(){
+        // TODO HEADER RESET !!!
+        this.board.Reset();
+    }
+
 }
