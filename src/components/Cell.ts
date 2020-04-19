@@ -6,7 +6,11 @@ export enum CellClickTypes{
     leftClick
 }
 
-export default class Cell extends Clickable<CellClickTypes> implements IComponent{
+export interface OnCellClickArgs {
+    type: CellClickTypes;
+}
+
+export default class Cell extends Clickable<OnCellClickArgs> implements IComponent{
     private element: HTMLElement;
     constructor() {
         super();
@@ -14,8 +18,13 @@ export default class Cell extends Clickable<CellClickTypes> implements IComponen
         this.element.classList.add("BorderedContainer");
         this.element.classList.add("CellInterior");
         this.element.classList.add("CellEnabled");
-        this.element.addEventListener('click', ()=>{this.Clicked(CellClickTypes.leftClick)});
-        this.element.addEventListener('contextmenu', ()=>{this.Clicked(CellClickTypes.rightClick)});
+        this.element.addEventListener('click', ()=>{this.Clicked({type: CellClickTypes.leftClick})});
+        this.element.addEventListener('contextmenu', ()=>{this.Clicked({type: CellClickTypes.rightClick})});
+    }
+
+    public SetImage(img : HTMLImageElement){
+        this.element.innerHTML = "";
+        this.element.appendChild(img);
     }
 
     public Reset(){
