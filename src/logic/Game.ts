@@ -3,7 +3,7 @@ import EventHandler from '../events/EventHandler';
 import Position from './Position';
 import Cell from './Cell';
 
-export interface OnOpenArgs{
+export interface OnCellChangeArgs{
     index: number;
     cell: Cell;
 }
@@ -13,7 +13,7 @@ export interface OnWinArgs{}
 export interface OnDefeatArgs{}
 
 export enum GameEvents{
-    open = "open",
+    cellChange = "cellChange",
     win = "win",
     defeat = "defeat"
 }
@@ -70,7 +70,7 @@ export default class Game{
         this.numberOfBombs = numberOfBombs;
         this.firstClick = true;
         this.eventManager = new EventManager();
-        this.eventManager.AddEventHandler<OnOpenArgs>(GameEvents.open);
+        this.eventManager.AddEventHandler<OnCellChangeArgs>(GameEvents.cellChange);
 
         this.CreateBoard();
         
@@ -136,19 +136,7 @@ export default class Game{
         return output;
     }
 
-    private SetBombAt(position: Position)
-    {
-        const index = this.BoardIndexOf(position);
-        if(this.board[index].isBomb){
-            return;
-        }
 
-        this.board[index].isBomb = true;
-        const neighborIndexes = this.GetUnopenedNeighborPosition(position).map(p => this.BoardIndexOf(p));
-        neighborIndexes.forEach(neighborIndex => {
-            this.board[neighborIndex].AddNeigbourBomb();
-        });
-    }
 
 
     public Open(position: Position){ // TODO cascade opening not implemented.
@@ -156,8 +144,23 @@ export default class Game{
             this.GenerateMap(position);
             this.firstClick = false;
         }
-        const OpenEventHandler = this.eventManager.GetEventHandler(GameEvents.open) as EventHandler<OnOpenArgs>;
-        const args: OnOpenArgs = {index: this.BoardIndexOf(position), cell: this.board[this.BoardIndexOf(position)]}
+        // const OpenEventHandler = this.eventManager.GetEventHandler(GameEvents.open) as EventHandler<OnOpenArgs>;
+        // const args: OnOpenArgs = {index: this.BoardIndexOf(position), cell: this.board[this.BoardIndexOf(position)]}
+        // OpenEventHandler.ExecuteListeners(args);
+    }
+
+    public Mark(position: Position){
+        const index = this.BoardIndexOf(position);
+        const cell = this.board[index];
+        if(cell.isOpened) { return; }
+
+        cell.isMarked = !cell.isMarked;
+        this.CellChanged(position);
+    }
+
+    private CellChanged(position: Position){
+        const OpenEventHandler = this.eventManager.GetEventHandler(GameEvents.cellChange) as EventHandler<OnCellChangeArgs>;
+        const args: OnCellChangeArgs = {index: this.BoardIndexOf(position), cell: this.board[this.BoardIndexOf(position)] }
         OpenEventHandler.ExecuteListeners(args);
     }
 
@@ -176,7 +179,6 @@ export default class Game{
         this.PlaceBombs(availableIndexes);
     }
 
-
     private PlaceBombs(availableIndexes: Array<number>){
         this.bombIndexes = new Array<number>();
         const positions = PullRandom<number>(availableIndexes, this.numberOfBombs).map(index => this.BoardPositionOf(index));
@@ -184,5 +186,18 @@ export default class Game{
             this.SetBombAt(position);
         });
 
+    }
+    private SetBombAt(position: Position)
+    {
+        const index = this.BoardIndexOf(position);
+        if(this.board[index].isBomb){
+            return;
+        }
+
+        this.board[index].isBomb = true;
+        const neighborIndexes = this.GetUnopenedNeighborPosition(position).map(p => this.BoardIndexOf(p));
+        neighborIndexes.forEach(neighborIndex => {
+            this.board[neighborIndex].AddNeigbourBomb();
+        });
     }
 }
