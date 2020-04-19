@@ -1,10 +1,11 @@
 import EventManager from '../events/EventManager';
 import EventHandler from '../events/EventHandler';
 import Position from './Position';
+import Cell from './Cell';
 
 export interface OnOpenArgs{
     index: number;
-    value: number;
+    cell: Cell;
 }
 
 export interface OnWinArgs{}
@@ -17,20 +18,51 @@ export enum GameEvents{
     defeat = "defeat"
 }
 
+
+function GetRange(start: number, end: number, step: number = 1, excluded: Array<number> = new Array<number>())
+{
+    const range = new Array<number>();
+    for(let i = start; i < end; i += step)
+    {
+        if(!excluded.includes(i)){
+            range.push(i);
+        }
+    }
+    return range;
+}
+
+function PullRandom<T>( array: T[], quantity: number ){
+    if(quantity > array.length){
+        throw new Error("Quantity of elements to pull is larger than array lenght.");
+    }
+    const randomArray = new Array<T>();
+    let indexMax = array.length - 1;
+    while(quantity > 0)
+    {
+        var randomIndex = Math.floor(Math.random() * indexMax);
+
+        randomArray.push(array[randomIndex]);
+
+        var tmp = array[randomIndex];
+        array[randomIndex] = array[indexMax];
+        array[indexMax] = tmp;
+
+        indexMax -= 1;
+        quantity -= 1;
+    }
+
+    return randomArray;
+}
+
+
+
 export default class Game{
     private size: {width: number, height: number};
     private numberOfBombs: number;
     private firstClick: boolean;
     private eventManager: EventManager;
 
-    /*
-     * Meaning of numbers inside board.
-     * <0, 8> - unopened cell, number of neighbor bombs
-     * <-9, -1> - opened cell, bitwise not number of neighbor bombs
-     * 9 - unopened bomb
-     * -10 - opened bomb
-     */
-    private board: number[];
+    private board: Cell[];
     private bombIndexes: number[];
 
     public constructor(size: {width: number, height: number}, numberOfBombs: number){
@@ -40,7 +72,18 @@ export default class Game{
         this.eventManager = new EventManager();
         this.eventManager.AddEventHandler<OnOpenArgs>(GameEvents.open);
 
-        this.board = new Array<number>(this.size.width*this.size.height);
+        this.CreateBoard();
+        
+    }
+
+    private CreateBoard(){
+        const arrayLenght = this.size.width*this.size.height;
+        this.board = new Array<Cell>();
+
+        for(let i = 0; i < arrayLenght; i++)
+        {
+            this.board.push(new Cell());
+        }
     }
 
     public GetEventHandler( event: GameEvents ) {
@@ -51,20 +94,17 @@ export default class Game{
         return position.x+position.y*this.size.width;
     }
 
+    private BoardPositionOf(index: number){
+        if(index >= this.board.length){
+            throw new Error("Index out of range.");
+        }
+        var x = index%this.size.width;
+        var y = Math.floor(index/this.size.width)
+        return new Position(x, y);
+    }
+
     private IsInsside(position: Position){
         return position.x >= 0 && position.x < this.size.width && position.y >= 0 && position.y < this.size.height;
-    }
-
-    private IsUnOpened(position: Position){
-        return this.board[this.BoardIndexOf(position)] >= 0;
-    }
-
-    private IsBomb(position: Position){
-        return this.board[this.BoardIndexOf(position)] == 9;
-    }
-
-    private SetValue(position: Position, value: number){
-        this.board[this.BoardIndexOf(position)] = value;
     }
 
     private GetMatrix(position: Position){
@@ -89,22 +129,27 @@ export default class Game{
     private GetUnopenedNeighborPosition(position: Position){
         const output = new Array<Position>();
         this.GetNeighborPositions(position).forEach(neighborPosition => {
-            if(this.IsUnOpened(neighborPosition)) {
+            if(!this.board[this.BoardIndexOf(neighborPosition)].isOpened) {
                 output.push(neighborPosition);
             }
         });
         return output;
     }
 
-    private GetNumberOfAdjacentBombs(position: Position){
-        var sum = 0;
-        this.GetNeighborPositions(position).forEach(neighborPosition => {
-            if(this.IsBomb(neighborPosition)) {
-                sum += 1;
-            }
+    private SetBombAt(position: Position)
+    {
+        const index = this.BoardIndexOf(position);
+        if(this.board[index].isBomb){
+            return;
+        }
+
+        this.board[index].isBomb = true;
+        const neighborIndexes = this.GetUnopenedNeighborPosition(position).map(p => this.BoardIndexOf(p));
+        neighborIndexes.forEach(neighborIndex => {
+            this.board[neighborIndex].AddNeigbourBomb();
         });
-        return sum;
     }
+
 
     public Open(position: Position){ // TODO cascade opening not implemented.
         if(this.firstClick){
@@ -112,7 +157,7 @@ export default class Game{
             this.firstClick = false;
         }
         const OpenEventHandler = this.eventManager.GetEventHandler(GameEvents.open) as EventHandler<OnOpenArgs>;
-        const args: OnOpenArgs = {index: this.BoardIndexOf(position), value: this.board[this.BoardIndexOf(position)]}
+        const args: OnOpenArgs = {index: this.BoardIndexOf(position), cell: this.board[this.BoardIndexOf(position)]}
         OpenEventHandler.ExecuteListeners(args);
     }
 
@@ -127,47 +172,17 @@ export default class Game{
 
     private GenerateMap(firstClickPosition: Position){
         const excludedIndexes = this.GetMatrix(firstClickPosition).map(position => this.BoardIndexOf(position) )
-        this.PlaceBombs(excludedIndexes);
-        this.CalculateNeighborBombs();
+        const availableIndexes = GetRange(0, this.board.length, 1, excludedIndexes)
+        this.PlaceBombs(availableIndexes);
     }
 
-    private PlaceBombs(excludedIndexes: number[]){
+
+    private PlaceBombs(availableIndexes: Array<number>){
         this.bombIndexes = new Array<number>();
-        const indexes = new Array<number>();
-        var indexMax = this.size.width * this.size.height - 1;
-        for(var i =0; i <= indexMax; i++){
-            if(!excludedIndexes.includes(i)){
-                indexes.push(i);
-            }
-        }
-        indexMax -= excludedIndexes.length;
-
-        while(this.bombIndexes.length < this.numberOfBombs){
-            var randomIndex = Math.floor(Math.random() * indexMax);
-
-            this.board[indexes[randomIndex]] = 9;
-            this.bombIndexes.push(randomIndex);
-
-            var tmp = indexes[randomIndex];
-            indexes[randomIndex] = indexes[indexMax];
-            indexes[indexMax] = tmp;
-
-            indexMax -= 1;
-        }
+        const positions = PullRandom<number>(availableIndexes, this.numberOfBombs).map(index => this.BoardPositionOf(index));
+        positions.forEach(position => {
+            this.SetBombAt(position);
+        });
 
     }
-
-    private CalculateNeighborBombs(){
-        for(var i = 0; i < this.size.width; i++) {
-            for( var j =0; j < this.size.height; j++ ) {
-                const position = new Position(i, j);
-                const index = this.BoardIndexOf(position);
-                if(!this.IsBomb(position)){
-                    this.SetValue(position, this.GetNumberOfAdjacentBombs(position))
-                }
-            }
-        }
-    }
-
-
 }
