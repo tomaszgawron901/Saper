@@ -1,40 +1,42 @@
 import IComponent from './IComponent';
 import Clickable from './Clickable';
-import Cell from './Cell';
+import Cell, {CellClickTypes} from './Cell';
 
 export interface OnCellClickArgs{
     x: number;
     y: number;
+    type: CellClickTypes;
 }
 export default class Board extends Clickable<OnCellClickArgs> implements IComponent{
 
-    private cells: Cell[];
+    public readonly cells: Cell[];
     private size: {width: number, height: number};
     public constructor(size: {width: number, height:number}){
         super();
         this.size = size;
-        this.CreateBoard();
+        this.cells = new Array<Cell>(this.size.width*this.size.height);
+        this.FillBoard();
     }
 
     private BoardIndexOf(x: number, y:number){
         return x + y*this.size.width;
     }
 
-    private CreateBoard() {
-        this.cells = new Array<Cell>(this.size.width*this.size.height);
-        var y: number;
-        var x: number;
-        for(y = 0; y < this.size.height; y++)
+    private FillBoard() {
+        
+        for(let y = 0; y < this.size.height; y++)
         {
-            for(x = 0; x < this.size.width; x++)
+            for(let x = 0; x < this.size.width; x++)
             {
                 const cell = new Cell();
-                const eventArgs = {x, y};
-                cell.AddOnClickListener(() => { this.Clicked(eventArgs) });
+                const position = {x, y};
+                cell.AddOnClickListener((args) => { 
+                    const clickArgs = {...position, ...args}
+                    this.Clicked(clickArgs) 
+                });
                 this.cells[this.BoardIndexOf(x, y)] = cell;
             }
         }
-        x = 2137;
     }
 
     public GetComponent() {
@@ -50,5 +52,11 @@ export default class Board extends Clickable<OnCellClickArgs> implements ICompon
             container.appendChild(row);
         }
         return container;
+    }
+
+    public Reset(){
+        this.cells.forEach(cell => {
+            cell.Reset();
+        });
     }
 }
