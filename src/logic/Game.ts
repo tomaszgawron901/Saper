@@ -10,7 +10,9 @@ export interface OnCellChangeArgs{
 
 export interface OnWinArgs{}
 
-export interface OnDefeatArgs{}
+export interface OnDefeatArgs{
+    lastOpenedIndex: number;
+}
 
 export enum GameEvents{
     cellChange = "cellChange",
@@ -70,6 +72,8 @@ export default class Game{
         this.firstClick = true;
         this.eventManager = new EventManager();
         this.eventManager.AddEventHandler<OnCellChangeArgs>(GameEvents.cellChange);
+        this.eventManager.AddEventHandler<OnDefeatArgs>(GameEvents.defeat);
+        this.eventManager.AddEventHandler<OnWinArgs>(GameEvents.win);
 
         this.CreateBoard();
         
@@ -136,9 +140,7 @@ export default class Game{
     }
 
 
-
-
-    public Open(position: Position){ // TODO cascade opening not implemented.
+    public Open(position: Position){
         if(this.firstClick){
             this.GenerateMap(position);
             this.firstClick = false;
@@ -146,7 +148,11 @@ export default class Game{
         const index = this.BoardIndexOf(position);
         const cell = this.board[index];
         if(cell.isOpened || cell.isMarked) { return; }
-        if(cell.isBomb) { return; } // TODO - End of the game.
+        if(cell.isBomb) {
+            this.DetonateAll();
+            this.GameLost(position);
+            return; 
+        }
         this.CascadeOpen(position);
     }
 
@@ -159,10 +165,41 @@ export default class Game{
         this.CellChanged(position);
     }
 
-    private CellChanged(position: Position){
+    private CellChanged(position: Position | number){
+        let index;
+        if(position instanceof Position)
+        { 
+            index = this.BoardIndexOf(position); 
+        } 
+        else{
+            index = position
+        }
+
         const OpenEventHandler = this.eventManager.GetEventHandler(GameEvents.cellChange) as EventHandler<OnCellChangeArgs>;
-        const args: OnCellChangeArgs = {index: this.BoardIndexOf(position), cell: this.board[this.BoardIndexOf(position)] }
+        const args: OnCellChangeArgs = {index: index, cell: this.board[index] }
         OpenEventHandler.ExecuteListeners(args);
+    }
+
+    private GameLost(position: Position)
+    {
+        const DefeatEventHandler = this.eventManager.GetEventHandler(GameEvents.defeat) as EventHandler<OnDefeatArgs>;
+        const args: OnDefeatArgs = {lastOpenedIndex: this.BoardIndexOf(position)};
+        DefeatEventHandler.ExecuteListeners(args);
+    }
+
+    private DetonateAll()
+    {
+        const lenght = this.size.width*this.size.height
+        for(let index = 0; index < lenght; index++)
+        {
+            const cell = this.board[index];
+            if( (cell.isBomb && !cell.isMarked) || (cell.isMarked && !cell.isBomb))
+            {
+                cell.isOpened = true;
+                this.CellChanged(index);
+            }
+        }
+        
     }
 
     private CascadeOpen(position: Position){
