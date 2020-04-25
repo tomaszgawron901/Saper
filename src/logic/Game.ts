@@ -63,7 +63,6 @@ export default class Game{
     private eventManager: EventManager;
 
     private board: Cell[];
-    private bombIndexes: number[];
 
     public constructor(size: {width: number, height: number}, numberOfBombs: number){
         this.size = size;
@@ -147,6 +146,11 @@ export default class Game{
         // const OpenEventHandler = this.eventManager.GetEventHandler(GameEvents.open) as EventHandler<OnOpenArgs>;
         // const args: OnOpenArgs = {index: this.BoardIndexOf(position), cell: this.board[this.BoardIndexOf(position)]}
         // OpenEventHandler.ExecuteListeners(args);
+
+        const index = this.BoardIndexOf(position);
+        this.board[index].isOpened = true;
+
+        this.CellChanged(position);
     }
 
     public Mark(position: Position){
@@ -164,7 +168,7 @@ export default class Game{
         OpenEventHandler.ExecuteListeners(args);
     }
 
-    /**
+    /** TODO
      * @param position Make sure that cell at given position is not bomb.
      * @param opened Array of opeend cells.
      */
@@ -180,7 +184,6 @@ export default class Game{
     }
 
     private PlaceBombs(availableIndexes: Array<number>){
-        this.bombIndexes = new Array<number>();
         const positions = PullRandom<number>(availableIndexes, this.numberOfBombs).map(index => this.BoardPositionOf(index));
         positions.forEach(position => {
             this.SetBombAt(position);
