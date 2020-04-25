@@ -143,14 +143,11 @@ export default class Game{
             this.GenerateMap(position);
             this.firstClick = false;
         }
-        // const OpenEventHandler = this.eventManager.GetEventHandler(GameEvents.open) as EventHandler<OnOpenArgs>;
-        // const args: OnOpenArgs = {index: this.BoardIndexOf(position), cell: this.board[this.BoardIndexOf(position)]}
-        // OpenEventHandler.ExecuteListeners(args);
-
         const index = this.BoardIndexOf(position);
-        this.board[index].isOpened = true;
-
-        this.CellChanged(position);
+        const cell = this.board[index];
+        if(cell.isOpened || cell.isMarked) { return; }
+        if(cell.isBomb) { return; } // TODO - End of the game.
+        this.CascadeOpen(position);
     }
 
     public Mark(position: Position){
@@ -168,12 +165,20 @@ export default class Game{
         OpenEventHandler.ExecuteListeners(args);
     }
 
-    /** TODO
-     * @param position Make sure that cell at given position is not bomb.
-     * @param opened Array of opeend cells.
-     */
-    private CascadeOpen(position: Position, opened: Array<{index: number, value: number}>){
-        const neighbors = this.GetUnopenedNeighborPosition(position);
+    private CascadeOpen(position: Position){
+        const cell = this.board[this.BoardIndexOf(position)];
+        cell.isOpened = true;
+        this.CellChanged(position);
+
+        if(cell.neighborBombs != 0) { return; }
+
+        const neighbors = this.GetNeighborPositions(position);
+        neighbors.forEach(neighborPosition => {
+            const neightbor = this.board[this.BoardIndexOf(neighborPosition)];
+            if(!neightbor.isOpened && !neightbor.isMarked){
+                this.CascadeOpen(neighborPosition);
+            }
+        });
 
     }
 
