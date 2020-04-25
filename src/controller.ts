@@ -52,6 +52,8 @@ export default class Controller {
 
     private OnCellChange(args: OnCellChangeArgs){
         const img = document.createElement("IMG") as HTMLImageElement;
+        img.style.marginTop = "2px";
+        img.style.marginLeft = "2px";
         if(args.cell.isMarked)
         {
             if(args.cell.isOpened && !args.cell.isBomb)
