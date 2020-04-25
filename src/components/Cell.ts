@@ -24,6 +24,7 @@ export default class Cell extends Clickable<OnCellClickArgs> implements ICompone
 
     public SetImage(img : HTMLImageElement){
         this.element.innerHTML = "";
+        img.draggable = false;
         this.element.appendChild(img);
     }
 
