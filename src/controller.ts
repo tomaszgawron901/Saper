@@ -3,11 +3,12 @@ import Game, {GameEvents, OnCellChangeArgs} from "./logic/Game";
 import {OnCellClickArgs} from './components/Board';
 import Position from "./logic/Position";
 import EventHandler from "./events/EventHandler";
-import { CellClickTypes } from "./components/Cell";
+import Cell, { CellClickTypes } from "./components/Cell";
+import Images from './logic/images';
 
 export default class Controller {
     public gameContainerElement: GameContainer;
-    public game: Game;
+    public game: Game;    
 
     public constructor(){
         
@@ -38,17 +39,47 @@ export default class Controller {
 
     private OnLeftClick(x: number, y: number)
     {
+        this.game.Open(new Position(x, y));
+        console.log(x, y, 'Left Click');
         
     }
 
     private OnRightClick(x: number, y: number)
     {
-        this.game.Mark(new Position(x, y))
+        this.game.Mark(new Position(x, y));
+        console.log(x, y, 'Right Click');
     }
 
     private OnCellChange(args: OnCellChangeArgs){
         const img = document.createElement("IMG") as HTMLImageElement;
-        img.src = 'images/flag.png';
+        if(args.cell.isMarked)
+        {
+            if(args.cell.isOpened && !args.cell.isBomb)
+            {
+                img.src = Images['notBomb'].src;
+            }
+            else
+            {
+                img.src = Images['flag'].src;
+            }
+        }
+        else if(args.cell.isOpened)
+        {
+            if(args.cell.isBomb)
+            {
+                img.src = Images['bomb'].src;
+            }else
+            {
+                if(args.cell.neighborBombs != 0)
+                {
+                    img.src =Images[args.cell.neighborBombs.toString()].src;
+                }
+            }
+        }
+
+        if(args.cell.isOpened){
+            this.gameContainerElement.board.cells[args.index].Disable();
+        }
         this.gameContainerElement.board.cells[args.index].SetImage(img);
     }
 
