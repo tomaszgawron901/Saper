@@ -61,10 +61,19 @@ function PullRandom<T>( array: T[], quantity: number ){
 export default class Game{
     private size: {width: number, height: number};
     private cellsToOpen: number;
+    private bombsToDisarm: number;
     private numberOfBombs: number;
     private firstClick: boolean;
     private eventManager: EventManager;
     private inProgress: boolean;
+
+    public get CellsToOpen(): number {
+        return this.cellsToOpen;
+    }
+
+    public get BombsToDisarm(): number {
+        return this.bombsToDisarm;
+    }
 
     private board: Cell[];
 
@@ -72,6 +81,7 @@ export default class Game{
         this.size = size;
         this.numberOfBombs = numberOfBombs;
         this.cellsToOpen = size.width*size.height - numberOfBombs;
+        this.bombsToDisarm = numberOfBombs;
         this.firstClick = true;
         this.inProgress = true;
         this.eventManager = new EventManager();
