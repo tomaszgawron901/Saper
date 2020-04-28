@@ -29,8 +29,12 @@ export default class Cell extends Clickable<OnCellClickArgs> implements ICompone
         this.element.appendChild(img);
     }
 
-    public SetBackgroundColor(color: string = "rgb(196, 196, 196)")
+    public SetBackgroundColor(color: string = null)
     {
+        if(color == null) {
+            this.element.style.backgroundColor = "";
+            return;
+        }
         this.element.style.backgroundColor = color;
     }
 
@@ -51,8 +55,7 @@ export default class Cell extends Clickable<OnCellClickArgs> implements ICompone
     public Disable(){
         if(this.element.classList.contains("CellEnabled")){
             this.element.classList.remove("CellEnabled");
-            this.element.classList.remove("BorderedContainer");
-            this.element.classList.add("NonBorderedContainer");
+            this.element.classList.replace("BorderedContainer", "NonBorderedContainer");
         }
         super.Disable();
     }
