@@ -18,6 +18,7 @@ export default class Cell extends Clickable<OnCellClickArgs> implements ICompone
         this.element.classList.add("BorderedContainer");
         this.element.classList.add("CellInterior");
         this.element.classList.add("CellEnabled");
+        this.SetBackgroundColor();
         this.element.addEventListener('click', ()=>{this.Clicked({type: CellClickTypes.leftClick})});
         this.element.addEventListener('contextmenu', ()=>{this.Clicked({type: CellClickTypes.rightClick})});
     }
@@ -28,8 +29,15 @@ export default class Cell extends Clickable<OnCellClickArgs> implements ICompone
         this.element.appendChild(img);
     }
 
+    public SetBackgroundColor(color: string = "rgb(196, 196, 196)")
+    {
+        this.element.style.backgroundColor = color;
+    }
+
     public Reset(){
         this.element.classList.add("BorderedContainer");
+        this.element.classList.add("CellEnabled");
+        this.SetBackgroundColor();
         this.Enable();
     }
 
