@@ -1,5 +1,5 @@
 import GameContainer from "./components/GameContainer";
-import Game, {GameEvents, OnCellChangeArgs} from "./logic/Game";
+import Game, {GameEvents, OnCellChangeArgs, OnDefeatArgs, OnWinArgs} from "./logic/Game";
 import {OnCellClickArgs} from './components/Board';
 import Position from "./logic/Position";
 import EventHandler from "./events/EventHandler";
@@ -22,6 +22,17 @@ export default class Controller {
         (this.game.GetEventHandler(GameEvents.cellChange) as EventHandler<OnCellChangeArgs>).AddEventListener( (args: OnCellChangeArgs) => {
             this.OnCellChange(args);
         });
+        (this.game.GetEventHandler(GameEvents.defeat) as EventHandler<OnDefeatArgs>).AddEventListener(
+            (args: OnDefeatArgs) => {
+                this.OnGameLose(args);
+            }
+        );
+        (this.game.GetEventHandler(GameEvents.win) as EventHandler<OnWinArgs>).AddEventListener(
+            (args: OnWinArgs) => {
+                this.OnGameWin(args);
+            }
+        );
+
         this.gameContainerElement = new GameContainer();
         this.gameContainerElement.board.AddOnClickListener( (args: OnCellClickArgs) => {
             this.OnClick(args);
@@ -85,5 +96,15 @@ export default class Controller {
         this.gameContainerElement.board.cells[args.index].SetImage(img);
     }
 
+    private OnGameLose(args: OnDefeatArgs)
+    {
+        this.gameContainerElement.board.cells[args.lastOpenedIndex].SetBackgroundColor("red");
+    }
+
+    private OnGameWin(args: OnWinArgs)
+    {
+        console.log("won");
+        
+    }
 
 }
