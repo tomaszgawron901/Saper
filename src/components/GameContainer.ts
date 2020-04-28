@@ -15,19 +15,13 @@ export default class GameContainer implements IComponent {
     }
 
     private boardContainer: HTMLElement;
-    private headConteiner: HTMLElement;
 
     public constructor(){
         this.boardContainer = document.createElement('DIV');
         this.boardContainer.classList.add("ReversedBorderedContainer");
         this.boardContainer.style.marginTop = "10px";
-        
-        this.headConteiner = document.createElement('DIV');
-        this.headConteiner.classList.add("ReversedBorderedContainer");
-        this.headConteiner.appendChild(this.head.GetComponent());
 
-        
-
+        this.head = new HeadContainer();
         this.SetNewBoard({width: 15, height: 15});
     }
 
@@ -44,7 +38,13 @@ export default class GameContainer implements IComponent {
         container.classList.add("BorderedContainer");
         container.addEventListener('contextmenu', event => event.preventDefault());
 
-        container.appendChild(this.headConteiner);
+
+        const headConteiner = document.createElement('DIV');
+        headConteiner.classList.add("ReversedBorderedContainer");
+        headConteiner.classList.add("HeadContainer");
+        headConteiner.appendChild(this.head.GetComponent());
+
+        container.appendChild(headConteiner);
         container.appendChild(this.boardContainer);
 
         return container;
