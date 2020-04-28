@@ -1,9 +1,18 @@
 import IComponent from './IComponent';
 import Board from './Board';
+import HeadContainer from './HeadContainer';
 
 export default class GameContainer implements IComponent {
-    public board: Board;
-    public head: any; // TODO create head component
+    private board: Board;
+    private head: HeadContainer;
+
+    public get Board(): Board{
+        return this.board;
+    }
+
+    public get Head(): HeadContainer{
+        return this.head;
+    }
 
     private boardContainer: HTMLElement;
     private headConteiner: HTMLElement;
@@ -11,10 +20,13 @@ export default class GameContainer implements IComponent {
     public constructor(){
         this.boardContainer = document.createElement('DIV');
         this.boardContainer.classList.add("ReversedBorderedContainer");
-
+        this.boardContainer.style.marginTop = "10px";
+        
         this.headConteiner = document.createElement('DIV');
         this.headConteiner.classList.add("ReversedBorderedContainer");
-        this.boardContainer.style.marginTop = "10px";
+        this.headConteiner.appendChild(this.head.GetComponent());
+
+        
 
         this.SetNewBoard({width: 15, height: 15});
     }
@@ -39,7 +51,7 @@ export default class GameContainer implements IComponent {
     }
 
     public Reset(){
-        // TODO HEADER RESET !!!
+        this.head.Reset();
         this.board.Reset();
     }
 
