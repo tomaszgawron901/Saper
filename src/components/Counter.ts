@@ -43,6 +43,7 @@ class CounterDigit implements IComponent{
     private element: HTMLImageElement;
     public constructor(){
         this.element = document.createElement("IMG") as HTMLImageElement;
+        this.element.draggable = false;
         this.SetValue(0);
     }
 
