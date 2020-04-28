@@ -4,7 +4,7 @@ import {OnCellClickArgs} from './components/Board';
 import Position from "./logic/Position";
 import EventHandler from "./events/EventHandler";
 import Cell, { CellClickTypes } from "./components/Cell";
-import Images from './logic/images';
+import Images from './images/images';
 
 export default class Controller {
     public gameContainerElement: GameContainer;
@@ -34,7 +34,7 @@ export default class Controller {
         );
 
         this.gameContainerElement = new GameContainer();
-        this.gameContainerElement.board.AddOnClickListener( (args: OnCellClickArgs) => {
+        this.gameContainerElement.Board.AddOnClickListener( (args: OnCellClickArgs) => {
             this.OnClick(args);
         } )
     }
@@ -85,20 +85,20 @@ export default class Controller {
             {
                 if(args.cell.neighborBombs != 0)
                 {
-                    img.src =Images[args.cell.neighborBombs.toString()].src;
+                    img.src =Images["o"+args.cell.neighborBombs.toString()].src;
                 }
             }
         }
 
         if(args.cell.isOpened){
-            this.gameContainerElement.board.cells[args.index].Disable();
+            this.gameContainerElement.Board.cells[args.index].Disable();
         }
-        this.gameContainerElement.board.cells[args.index].SetImage(img);
+        this.gameContainerElement.Board.cells[args.index].SetImage(img);
     }
 
     private OnGameLose(args: OnDefeatArgs)
     {
-        this.gameContainerElement.board.cells[args.lastOpenedIndex].SetBackgroundColor("red");
+        this.gameContainerElement.Board.cells[args.lastOpenedIndex].SetBackgroundColor("red");
     }
 
     private OnGameWin(args: OnWinArgs)
