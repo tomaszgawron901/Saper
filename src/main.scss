@@ -58,6 +58,18 @@
   padding: 10px;
 }
 
+.CounterContainer{
+  display: flex;
+  flex-direction: row;
+}
+
+.HeadContainer{
+  width: 100%;
+  height: 300px;
+  display: flex;
+  flex-direction: row;
+}
+
 body {
   background-color: grey;
 }
