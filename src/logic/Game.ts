@@ -60,16 +60,20 @@ function PullRandom<T>( array: T[], quantity: number ){
 
 export default class Game{
     private size: {width: number, height: number};
+    private cellsToOpen: number;
     private numberOfBombs: number;
     private firstClick: boolean;
     private eventManager: EventManager;
+    private inProgress: boolean;
 
     private board: Cell[];
 
     public constructor(size: {width: number, height: number}, numberOfBombs: number){
         this.size = size;
         this.numberOfBombs = numberOfBombs;
+        this.cellsToOpen = size.width*size.height - numberOfBombs;
         this.firstClick = true;
+        this.inProgress = true;
         this.eventManager = new EventManager();
         this.eventManager.AddEventHandler<OnCellChangeArgs>(GameEvents.cellChange);
         this.eventManager.AddEventHandler<OnDefeatArgs>(GameEvents.defeat);
@@ -129,26 +133,19 @@ export default class Game{
         return this.GetMatrix(position).filter(pos => !pos.Equals(position));
     }
 
-    private GetUnopenedNeighborPosition(position: Position){
-        const output = new Array<Position>();
-        this.GetNeighborPositions(position).forEach(neighborPosition => {
-            if(!this.board[this.BoardIndexOf(neighborPosition)].isOpened) {
-                output.push(neighborPosition);
-            }
-        });
-        return output;
-    }
-
-
     public Open(position: Position){
+        if(!this.inProgress) { return; }
+
+        const index = this.BoardIndexOf(position);
+        const cell = this.board[index];
+        if(cell.isOpened || cell.isMarked) { return; }
         if(this.firstClick){
             this.GenerateMap(position);
             this.firstClick = false;
         }
-        const index = this.BoardIndexOf(position);
-        const cell = this.board[index];
-        if(cell.isOpened || cell.isMarked) { return; }
+
         if(cell.isBomb) {
+            this.inProgress = false;
             this.DetonateAll();
             this.GameLost(position);
             return; 
@@ -157,6 +154,8 @@ export default class Game{
     }
 
     public Mark(position: Position){
+        if(!this.inProgress) { return; }
+
         const index = this.BoardIndexOf(position);
         const cell = this.board[index];
         if(cell.isOpened) { return; }
@@ -187,6 +186,12 @@ export default class Game{
         DefeatEventHandler.ExecuteListeners(args);
     }
 
+    private GameWon(){
+        const WinEventHandler = this.eventManager.GetEventHandler(GameEvents.win) as EventHandler<OnWinArgs>;
+        const args: OnWinArgs = {};
+        WinEventHandler.ExecuteListeners(args);
+    }
+
     private DetonateAll()
     {
         const lenght = this.size.width*this.size.height
@@ -203,10 +208,10 @@ export default class Game{
     }
 
     private CascadeOpen(position: Position){
-        const cell = this.board[this.BoardIndexOf(position)];
-        cell.isOpened = true;
-        this.CellChanged(position);
 
+        this.OpenCell(position);
+
+        const cell = this.board[this.BoardIndexOf(position)];
         if(cell.neighborBombs != 0) { return; }
 
         const neighbors = this.GetNeighborPositions(position);
@@ -217,6 +222,18 @@ export default class Game{
             }
         });
 
+    }
+
+    private OpenCell(position: Position)
+    {
+        const cell = this.board[this.BoardIndexOf(position)];
+        cell.isOpened = true;
+        this.cellsToOpen -= 1;
+        this.CellChanged(position);
+        if(this.cellsToOpen == 0){
+            this.inProgress = false;
+            this.GameWon();
+        }
     }
 
     private GenerateMap(firstClickPosition: Position){
@@ -232,6 +249,7 @@ export default class Game{
         });
 
     }
+
     private SetBombAt(position: Position)
     {
         const index = this.BoardIndexOf(position);
@@ -240,7 +258,7 @@ export default class Game{
         }
 
         this.board[index].isBomb = true;
-        const neighborIndexes = this.GetUnopenedNeighborPosition(position).map(p => this.BoardIndexOf(p));
+        const neighborIndexes = this.GetNeighborPositions(position).map(p => this.BoardIndexOf(p));
         neighborIndexes.forEach(neighborIndex => {
             this.board[neighborIndex].AddNeigbourBomb();
         });
