@@ -1,5 +1,5 @@
 import GameContainer from "./components/GameContainer";
-import Game, {GameEvents, OnCellChangeArgs, OnDefeatArgs, OnWinArgs} from "./logic/Game";
+import Game, {GameEvents, OnCellChangeArgs, OnDefeatArgs, OnWinArgs, OnBombsToDisarmChangedArgs} from "./logic/Game";
 import {OnCellClickArgs} from './components/Board';
 import Position from "./logic/Position";
 import EventHandler from "./events/EventHandler";
@@ -18,6 +18,16 @@ export default class Controller {
     }
 
     public NewGame(){
+        this.InitializeGame()
+
+        this.gameContainerElement = new GameContainer();
+        this.gameContainerElement.Board.AddOnClickListener( (args: OnCellClickArgs) => {
+            this.OnClick(args);
+        } );
+        this.gameContainerElement.Head.NewGameBTN.AddOnClickListener( () => {this.OnReset()} );
+    }
+
+    private InitializeGame(){
         this.game = new Game({width: 15,height: 15}, 40);
         (this.game.GetEventHandler(GameEvents.cellChange) as EventHandler<OnCellChangeArgs>).AddEventListener( (args: OnCellChangeArgs) => {
             this.OnCellChange(args);
@@ -32,12 +42,13 @@ export default class Controller {
                 this.OnGameWin(args);
             }
         );
-
-        this.gameContainerElement = new GameContainer();
-        this.gameContainerElement.Board.AddOnClickListener( (args: OnCellClickArgs) => {
-            this.OnClick(args);
-        } )
+        (this.game.GetEventHandler(GameEvents.bombsToDisarmChanged) as EventHandler<OnBombsToDisarmChangedArgs>).AddEventListener(
+            (args: OnBombsToDisarmChangedArgs) => {
+                this.OnBombsToDisarmChange(args);
+            }
+        );
     }
+
 
     private OnClick(args: OnCellClickArgs){
         if(args.type == CellClickTypes.leftClick){
@@ -60,6 +71,8 @@ export default class Controller {
         this.game.Mark(new Position(x, y));
         console.log(x, y, 'Right Click');
     }
+
+
 
     private OnCellChange(args: OnCellChangeArgs){
         const img = document.createElement("IMG") as HTMLImageElement;
@@ -96,6 +109,11 @@ export default class Controller {
         this.gameContainerElement.Board.cells[args.index].SetImage(img);
     }
 
+    private OnReset(){
+        this.gameContainerElement.Reset();
+        this.InitializeGame();
+    }
+
     private OnGameLose(args: OnDefeatArgs)
     {
         this.gameContainerElement.Board.cells[args.lastOpenedIndex].SetBackgroundColor("red");
@@ -104,6 +122,11 @@ export default class Controller {
     private OnGameWin(args: OnWinArgs)
     {
         console.log("won");
+        
+    }
+
+    private OnBombsToDisarmChange(args: OnBombsToDisarmChangedArgs){
+        this.gameContainerElement.Head.LeftCounter.SetValue(args.bombsToDisarm);
         
     }
 
