@@ -11,7 +11,7 @@ export default class EventHandler<T>{
      */
     public AddEventListener( func: (args?: T) => void) {
         this.listeners.push(func);
-        return this.RemoveListener(func);
+        return () => {this.RemoveListener(func)};
     }
 
     public ExecuteListeners( args?: T ) {
