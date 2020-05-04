@@ -39,7 +39,9 @@ export default class Cell extends Clickable<OnCellClickArgs> implements ICompone
     }
 
     public Reset(){
+        this.element.innerHTML = "";
         this.element.classList.add("BorderedContainer");
+        this.element.classList.remove("NonBorderedContainer");
         this.element.classList.add("CellEnabled");
         this.SetBackgroundColor();
         this.Enable();
