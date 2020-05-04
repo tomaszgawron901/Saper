@@ -22,10 +22,10 @@ export default class Counter implements IComponent{
 
     public SetValue(value: number)
     {
+        const strValue = Math.floor(value).toString().padStart(this.decimalPlaces, '0');
         for(let i = 0; i < this.decimalPlaces; i++)
         {
-            const digit = Math.floor(value % Math.pow(10, i+1) / Math.pow(10, i));
-            this.CounterDigits[this.decimalPlaces - 1 - i].SetValue(digit);
+            this.CounterDigits[this.decimalPlaces - 1 - i].SetValue(strValue[strValue.length - 1 - i]);
         }
     }
 
@@ -44,12 +44,12 @@ class CounterDigit implements IComponent{
     public constructor(){
         this.element = document.createElement("IMG") as HTMLImageElement;
         this.element.draggable = false;
-        this.SetValue(0);
+        this.SetValue('0');
     }
 
-    public SetValue(value: number)
+    public SetValue(value: string)
     {
-        this.element.src = images["c"+value.toString()].src;
+        this.element.src = images["c"+value].src;
     }
 
     public GetComponent()
