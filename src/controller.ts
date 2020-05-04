@@ -28,6 +28,9 @@ export default class Controller {
     }
 
     private InitializeGame(){
+        if(this.game != null){
+            this.game.Dispatch();
+        }
         this.game = new Game({width: 15,height: 15}, 40);
         (this.game.GetEventHandler(GameEvents.cellChange) as EventHandler<OnCellChangeArgs>).AddEventListener( (args: OnCellChangeArgs) => {
             this.OnCellChange(args);
@@ -47,6 +50,11 @@ export default class Controller {
                 this.OnBombsToDisarmChange(args);
             }
         );
+
+        this.game.Timer.AddOnTimeChangeEventListener((args)=>{
+            this.gameContainerElement.Head.RigthCounter.SetValue(args.value);
+            
+        })
     }
 
 
