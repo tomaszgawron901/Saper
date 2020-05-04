@@ -14,8 +14,13 @@ export interface OnDefeatArgs{
     lastOpenedIndex: number;
 }
 
+export interface OnBombsToDisarmChangedArgs{
+    bombsToDisarm: number;
+}
+
 export enum GameEvents{
     cellChange = "cellChange",
+    bombsToDisarmChanged = "bombsToDisarmChanged",
     win = "win",
     defeat = "defeat"
 }
@@ -67,30 +72,37 @@ export default class Game{
     private eventManager: EventManager;
     private inProgress: boolean;
 
-    public get CellsToOpen(): number {
-        return this.cellsToOpen;
-    }
-
-    public get BombsToDisarm(): number {
-        return this.bombsToDisarm;
+    private set BombsToDisarm(value: number) {
+        if(this.bombsToDisarm == value){
+            return;
+        }
+        this.bombsToDisarm = value;
+        this.BombsToDisarmChanged()
     }
 
     private board: Cell[];
 
     public constructor(size: {width: number, height: number}, numberOfBombs: number){
+        this.InitializeEvents()
+
         this.size = size;
         this.numberOfBombs = numberOfBombs;
         this.cellsToOpen = size.width*size.height - numberOfBombs;
-        this.bombsToDisarm = numberOfBombs;
+        this.BombsToDisarm = numberOfBombs;
         this.firstClick = true;
         this.inProgress = true;
+
+
+        this.CreateBoard();
+        
+    }
+
+    private InitializeEvents(){
         this.eventManager = new EventManager();
         this.eventManager.AddEventHandler<OnCellChangeArgs>(GameEvents.cellChange);
         this.eventManager.AddEventHandler<OnDefeatArgs>(GameEvents.defeat);
         this.eventManager.AddEventHandler<OnWinArgs>(GameEvents.win);
-
-        this.CreateBoard();
-        
+        this.eventManager.AddEventHandler<OnBombsToDisarmChangedArgs>(GameEvents.bombsToDisarmChanged);
     }
 
     private CreateBoard(){
@@ -171,6 +183,12 @@ export default class Game{
         if(cell.isOpened) { return; }
 
         cell.isMarked = !cell.isMarked;
+        if(cell.isMarked){
+            this.BombsToDisarm = this.bombsToDisarm - 1;
+        }
+        else{
+            this.BombsToDisarm = this.bombsToDisarm + 1;
+        }
         this.CellChanged(position);
     }
 
@@ -202,6 +220,12 @@ export default class Game{
         WinEventHandler.ExecuteListeners(args);
     }
 
+    private BombsToDisarmChanged(){
+        const BombsToDisarmEventHandler = this.eventManager.GetEventHandler(GameEvents.bombsToDisarmChanged) as EventHandler<OnBombsToDisarmChangedArgs>;
+        const args: OnBombsToDisarmChangedArgs = { bombsToDisarm: this.bombsToDisarm };
+        BombsToDisarmEventHandler.ExecuteListeners(args);
+    }
+
     private DetonateAll()
     {
         const lenght = this.size.width*this.size.height
@@ -214,7 +238,19 @@ export default class Game{
                 this.CellChanged(index);
             }
         }
-        
+    }
+
+    private MarkAll(){
+        const lenght = this.size.width*this.size.height
+        for(let index = 0; index < lenght; index++)
+        {
+            const cell = this.board[index];
+            if( !(cell.isOpened || cell.isMarked))
+            {
+                cell.isMarked = true;
+                this.CellChanged(index);
+            }
+        }
     }
 
     private CascadeOpen(position: Position){
@@ -242,6 +278,7 @@ export default class Game{
         this.CellChanged(position);
         if(this.cellsToOpen == 0){
             this.inProgress = false;
+            this.MarkAll();
             this.GameWon();
         }
     }
