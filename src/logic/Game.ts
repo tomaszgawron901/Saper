@@ -2,6 +2,7 @@ import EventManager from '../events/EventManager';
 import EventHandler from '../events/EventHandler';
 import Position from './Position';
 import Cell from './Cell';
+import Timer, { ITimerChangeHandler } from './timer';
 
 export interface OnCellChangeArgs{
     index: number;
@@ -71,6 +72,12 @@ export default class Game{
     private firstClick: boolean;
     private eventManager: EventManager;
     private inProgress: boolean;
+    private timer: Timer;
+    private board: Cell[];
+
+    public get Timer(){
+        return this.timer as ITimerChangeHandler;
+    }
 
     private set BombsToDisarm(value: number) {
         if(this.bombsToDisarm == value){
@@ -79,8 +86,6 @@ export default class Game{
         this.bombsToDisarm = value;
         this.BombsToDisarmChanged()
     }
-
-    private board: Cell[];
 
     public constructor(size: {width: number, height: number}, numberOfBombs: number){
         this.InitializeEvents()
@@ -91,10 +96,9 @@ export default class Game{
         this.BombsToDisarm = numberOfBombs;
         this.firstClick = true;
         this.inProgress = true;
-
+        this.timer = new Timer();
 
         this.CreateBoard();
-        
     }
 
     private InitializeEvents(){
@@ -162,14 +166,11 @@ export default class Game{
         const cell = this.board[index];
         if(cell.isOpened || cell.isMarked) { return; }
         if(this.firstClick){
-            this.GenerateMap(position);
-            this.firstClick = false;
+            this.OnFirstClick(position);
         }
 
         if(cell.isBomb) {
-            this.inProgress = false;
-            this.DetonateAll();
-            this.GameLost(position);
+            this.OnGameLose(position);
             return; 
         }
         this.CascadeOpen(position);
@@ -190,6 +191,29 @@ export default class Game{
             this.BombsToDisarm = this.bombsToDisarm + 1;
         }
         this.CellChanged(position);
+    }
+
+    private OnFirstClick(position: Position){
+        this.GenerateMap(position);
+        this.timer.Start();
+        this.firstClick = false;
+    }
+
+    private OnGameLose(position: Position){
+        this.OnGameEnd();
+        this.DetonateAll();
+        this.GameLost(position);
+    }
+
+    private OnGameWin(){
+        this.OnGameEnd();
+        this.MarkAll();
+        this.GameWon();
+    }
+
+    private OnGameEnd(){
+        this.inProgress = false;
+        this.timer.Stop();
     }
 
     private CellChanged(position: Position | number){
@@ -277,9 +301,7 @@ export default class Game{
         this.cellsToOpen -= 1;
         this.CellChanged(position);
         if(this.cellsToOpen == 0){
-            this.inProgress = false;
-            this.MarkAll();
-            this.GameWon();
+            this.OnGameWin();
         }
     }
 
@@ -309,5 +331,10 @@ export default class Game{
         neighborIndexes.forEach(neighborIndex => {
             this.board[neighborIndex].AddNeigbourBomb();
         });
+    }
+
+
+    public Dispatch(){
+        this.timer.Stop();
     }
 }
