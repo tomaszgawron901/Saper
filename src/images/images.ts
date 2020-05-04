@@ -65,6 +65,18 @@ c9.src = 'images/c9.gif';
 const c_ = new Image(18, 18);
 c_.src = 'images/c-.gif';
 
+const e1 = new Image(32, 32);
+e1.src = 'images/e1.png';
+
+const e2 = new Image(32, 32);
+e2.src = 'images/e2.png';
+
+const e3 = new Image(32, 32);
+e3.src = 'images/e3.png';
+
+const e4 = new Image(32, 32);
+e4.src = 'images/e4.png';
+
 const Images: any = {
     'bomb': bomb,
     'flag': flag,
@@ -87,7 +99,11 @@ const Images: any = {
     'c7': c7,
     'c8': c8,
     'c9': c9,
-    'c-': c_
+    'c-': c_,
+    'e1': e1,
+    'e2': e2,
+    'e3': e3,
+    'e4': e4
 }
 
 export default Images;
