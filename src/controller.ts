@@ -83,30 +83,28 @@ export default class Controller {
 
 
     private OnCellChange(args: OnCellChangeArgs){
-        const img = document.createElement("IMG") as HTMLImageElement;
-        img.style.marginTop = "2px";
-        img.style.marginLeft = "2px";
+        let imgPath: string;
         if(args.cell.isMarked)
         {
             if(args.cell.isOpened && !args.cell.isBomb)
             {
-                img.src = Images['notBomb'].src;
+                imgPath = Images['notBomb'].src;
             }
             else
             {
-                img.src = Images['flag'].src;
+                imgPath = Images['flag'].src;
             }
         }
         else if(args.cell.isOpened)
         {
             if(args.cell.isBomb)
             {
-                img.src = Images['bomb'].src;
+                imgPath = Images['bomb'].src;
             }else
             {
                 if(args.cell.neighborBombs != 0)
                 {
-                    img.src =Images["o"+args.cell.neighborBombs.toString()].src;
+                    imgPath =Images["o"+args.cell.neighborBombs.toString()].src;
                 }
             }
         }
@@ -114,22 +112,24 @@ export default class Controller {
         if(args.cell.isOpened){
             this.gameContainerElement.Board.cells[args.index].Disable();
         }
-        this.gameContainerElement.Board.cells[args.index].SetImage(img);
+        this.gameContainerElement.Board.cells[args.index].SetImage(imgPath);
     }
 
     private OnReset(){
+        this.gameContainerElement.Head.NewGameBTN.SetImage(Images["e1"].src);
         this.gameContainerElement.Reset();
         this.InitializeGame();
     }
 
     private OnGameLose(args: OnDefeatArgs)
     {
+        this.gameContainerElement.Head.NewGameBTN.SetImage(Images["e3"].src);
         this.gameContainerElement.Board.cells[args.lastOpenedIndex].SetBackgroundColor("red");
     }
 
     private OnGameWin(args: OnWinArgs)
     {
-        console.log("won");
+        this.gameContainerElement.Head.NewGameBTN.SetImage(Images["e4"].src);
         
     }
 

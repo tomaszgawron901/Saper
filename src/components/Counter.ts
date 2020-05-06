@@ -40,16 +40,17 @@ export default class Counter implements IComponent{
 
 
 class CounterDigit implements IComponent{
-    private element: HTMLImageElement;
+    private element: HTMLDivElement;
     public constructor(){
-        this.element = document.createElement("IMG") as HTMLImageElement;
+        this.element = document.createElement("DIV") as HTMLDivElement;
+        this.element.classList.add('CounterImage');
         this.element.draggable = false;
         this.SetValue('0');
     }
 
     public SetValue(value: string)
     {
-        this.element.src = images["c"+value].src;
+        this.element.style.backgroundImage = "url("+images["c"+value].src+")";
     }
 
     public GetComponent()
