@@ -1,5 +1,4 @@
 import IComponent from './IComponent';
-import images from '../images/images';
 
 export default class Counter implements IComponent{
     private element: HTMLElement;
@@ -50,7 +49,7 @@ class CounterDigit implements IComponent{
 
     public SetValue(value: string)
     {
-        this.element.style.backgroundImage = "url("+images["c"+value].src+")";
+        this.element.style.backgroundImage = "url(images/c"+value+".gif)";
     }
 
     public GetComponent()

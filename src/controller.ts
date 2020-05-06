@@ -4,7 +4,6 @@ import {OnCellClickArgs} from './components/Board';
 import Position from "./logic/Position";
 import EventHandler from "./events/EventHandler";
 import Cell, { CellClickTypes } from "./components/Cell";
-import Images from './images/images';
 
 export default class Controller {
     public gameContainerElement: GameContainer;
@@ -88,23 +87,23 @@ export default class Controller {
         {
             if(args.cell.isOpened && !args.cell.isBomb)
             {
-                imgPath = Images['notBomb'].src;
+                imgPath = "images/notbomba.png";
             }
             else
             {
-                imgPath = Images['flag'].src;
+                imgPath = "images/flag.png";
             }
         }
         else if(args.cell.isOpened)
         {
             if(args.cell.isBomb)
             {
-                imgPath = Images['bomb'].src;
+                imgPath = "images/bomba.png";
             }else
             {
                 if(args.cell.neighborBombs != 0)
                 {
-                    imgPath =Images["o"+args.cell.neighborBombs.toString()].src;
+                    imgPath = "images/o"+ args.cell.neighborBombs.toString() +".png";
                 }
             }
         }
@@ -112,24 +111,28 @@ export default class Controller {
         if(args.cell.isOpened){
             this.gameContainerElement.Board.cells[args.index].Disable();
         }
-        this.gameContainerElement.Board.cells[args.index].SetImage(imgPath);
+        if(imgPath != undefined)
+        {
+            this.gameContainerElement.Board.cells[args.index].SetImage(imgPath);
+        }
+
     }
 
     private OnReset(){
-        this.gameContainerElement.Head.NewGameBTN.SetImage(Images["e1"].src);
+        this.gameContainerElement.Head.NewGameBTN.SetImage("images/e1.png");
         this.gameContainerElement.Reset();
         this.InitializeGame();
     }
 
     private OnGameLose(args: OnDefeatArgs)
     {
-        this.gameContainerElement.Head.NewGameBTN.SetImage(Images["e3"].src);
+        this.gameContainerElement.Head.NewGameBTN.SetImage("images/e3.png");
         this.gameContainerElement.Board.cells[args.lastOpenedIndex].SetBackgroundColor("red");
     }
 
     private OnGameWin(args: OnWinArgs)
     {
-        this.gameContainerElement.Head.NewGameBTN.SetImage(Images["e4"].src);
+        this.gameContainerElement.Head.NewGameBTN.SetImage("images/e4.png");
         
     }
 
