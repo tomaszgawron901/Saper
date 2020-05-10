@@ -25,13 +25,15 @@ export default class Cell extends Clickable<OnCellClickArgs> implements ICompone
 
     public SetImage(path: string){
         this.element.innerHTML = "";
-        const img = document.createElement('DIV') as HTMLDivElement;
-        img.classList.add('ImgDIV');
-        img.style.backgroundImage = "url("+path+")";
-        img.style.margin = "2px";
-        img.style.width = "18px";
-        img.style.height = "18px";
-        this.element.appendChild(img);
+        if(path != undefined){
+            const img = document.createElement('DIV') as HTMLDivElement;
+            img.classList.add('ImgDIV');
+            img.style.backgroundImage = "url("+path+")";
+            img.style.margin = "2px";
+            img.style.width = "18px";
+            img.style.height = "18px";
+            this.element.appendChild(img);
+        }
     }
 
     public SetBackgroundColor(color: string = null)
