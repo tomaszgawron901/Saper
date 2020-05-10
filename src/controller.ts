@@ -1,25 +1,28 @@
 import GameContainer from "./components/GameContainer";
 import Game, {GameEvents, OnCellChangeArgs, OnDefeatArgs, OnWinArgs, OnBombsToDisarmChangedArgs} from "./logic/Game";
-import {OnCellClickArgs} from './components/Board';
+import Board, {OnCellClickArgs} from './components/Board';
 import Position from "./logic/Position";
 import EventHandler from "./events/EventHandler";
 import Cell, { CellClickTypes } from "./components/Cell";
+import { IGameType, BaseGameTypes } from "./logic/gameTypes";
 
 export default class Controller {
     public gameContainerElement: GameContainer;
-    public game: Game;    
+    public game: Game;
+
+    private gameType: IGameType;
 
     public constructor(){
-        
+        this.gameType = BaseGameTypes.Expert;
         this.NewGame();
-
-
     }
 
     public NewGame(){
         this.InitializeGame()
 
         this.gameContainerElement = new GameContainer();
+        this.gameContainerElement.Head.LeftCounter.SetValue(this.gameType.bombs);
+        this.gameContainerElement.SetNewBoard({width: this.gameType.width, height: this.gameType.height});
         this.gameContainerElement.Board.AddOnClickListener( (args: OnCellClickArgs) => {
             this.OnClick(args);
         } );
@@ -30,7 +33,7 @@ export default class Controller {
         if(this.game != null){
             this.game.Dispatch();
         }
-        this.game = new Game({width: 15,height: 15}, 40);
+        this.game = new Game({width: this.gameType.width,height: this.gameType.height}, this.gameType.bombs);
         (this.game.GetEventHandler(GameEvents.cellChange) as EventHandler<OnCellChangeArgs>).AddEventListener( (args: OnCellChangeArgs) => {
             this.OnCellChange(args);
         });
@@ -118,6 +121,7 @@ export default class Controller {
     private OnReset(){
         this.gameContainerElement.Head.NewGameBTN.SetImage("images/e1.png");
         this.gameContainerElement.Reset();
+        this.gameContainerElement.Head.LeftCounter.SetValue(this.gameType.bombs);
         this.InitializeGame();
     }
 
