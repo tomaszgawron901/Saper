@@ -111,10 +111,7 @@ export default class Controller {
         if(args.cell.isOpened){
             this.gameContainerElement.Board.cells[args.index].Disable();
         }
-        if(imgPath != undefined)
-        {
-            this.gameContainerElement.Board.cells[args.index].SetImage(imgPath);
-        }
+        this.gameContainerElement.Board.cells[args.index].SetImage(imgPath);
 
     }
 
