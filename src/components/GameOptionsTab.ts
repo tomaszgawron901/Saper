@@ -49,7 +49,7 @@ class GameOptionsTable implements IComponent{
         this.InitializeRadioButtons();
 
         this.table = document.createElement('TABLE') as HTMLTableElement;
-        this.table.classList.add('OptionsTab');
+        this.table.classList.add('ReversedBorderedContainer');
         
         this.AppendRow(0, ["", "Width", "Height", "Bombs"]);
         this.AppendRow(1, [GetLabeledElement(this.radioButtnos[0], "Beginner"), "8", "8", "10"]);
@@ -116,12 +116,18 @@ export default class GameOptionsTab implements IComponent{
         this.eventManager.AddEventHandler<OnSubmitArgs>("OnSubmit");
 
         this.element = document.createElement('DIV') as HTMLDivElement;
+        this.element.classList.add('BorderedContainer');
+        this.element.style.width = 'fit-content';
+        this.element.style.padding = '5px';
 
         this.got = new GameOptionsTable();
         this.element.appendChild(this.got.GetComponent());
 
         const subBTN = document.createElement('BUTTON') as HTMLButtonElement;
-        subBTN.innerText = "Create";
+        subBTN.innerText = "Submit";
+        subBTN.style.width = '100%';
+        subBTN.style.marginTop = '5px';
+        subBTN.classList.add("BorderedContainer");
         subBTN.addEventListener('click', () => { this.Submited(); })
         this.element.appendChild(subBTN);
 

@@ -23,6 +23,17 @@
   background-color: rgb(184, 184, 184);;
 }
 
+button.BorderedContainer:active {
+  border-width: 3px;
+  border-style: solid;
+  border-top-color: rgb(110, 110, 110);
+  border-left-color: rgb(110, 110, 110);
+  border-bottom-color: white;
+  border-right-color: white;
+  background-color: rgb(196, 196, 196);
+}
+
+
 .CellInterior{
   box-sizing: border-box;
   width: 100%;
