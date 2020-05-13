@@ -1,10 +1,11 @@
 import IComponent from "./IComponent";
+import EventManager from "../events/EventManager";
+import EventHandler from "../events/EventHandler";
+import {GameTypeNames} from '../logic/gameTypes';
 
-enum GameTypes{
-    beginner = 0,
-    intermediate = 1,
-    expert = 2,
-    custom = 3
+
+export interface OnSubmitArgs{
+    gameType: GameTypeNames;
 }
 
 function GetLabeledElement(element: HTMLElement, text: string)
@@ -24,10 +25,21 @@ class GameOptionsTable implements IComponent{
     private radioButtnos: Array<HTMLInputElement>;
     private id: number;
 
-    private gameType: GameTypes;
-    private customValue: {width: number, height: number, bombs: number};
+    private gameType: GameTypeNames;
 
-    public Check(gameType: GameTypes){
+    private customWidthInput: HTMLInputElement;
+    private customHeightInput: HTMLInputElement;
+    private customBombsInput: HTMLInputElement;
+
+    public get GameType(){
+        return this.gameType;
+    }
+
+    public get CustomValue(){
+        return {width:  parseInt(this.customWidthInput.value) , height: parseInt(this.customHeightInput.value), bombs: parseInt(this.customBombsInput.value)};
+    }
+
+    public Check(gameType: GameTypeNames){
         this.radioButtnos[gameType].checked = true;
         this.OnSelectionChange(gameType);
     }
@@ -40,21 +52,17 @@ class GameOptionsTable implements IComponent{
         this.table.classList.add('OptionsTab');
         
         this.AppendRow(0, ["", "Width", "Height", "Bombs"]);
-
         this.AppendRow(1, [GetLabeledElement(this.radioButtnos[0], "Beginner"), "8", "8", "10"]);
-
         this.AppendRow(2, [GetLabeledElement(this.radioButtnos[1], "Intermediate"), "16", "16", "40"]);
-
-
         this.AppendRow(3, [GetLabeledElement(this.radioButtnos[2], "Expert"), "32", "16", "99"]);
 
-        const in1 = document.createElement('INPUT') as HTMLInputElement;
-        in1.style.width = '40px';
-        const in2 = document.createElement('INPUT') as HTMLInputElement;
-        in2.style.width = '40px';
-        const in3 = document.createElement('INPUT') as HTMLInputElement;
-        in3.style.width = '40px';
-        this.AppendRow(4, [GetLabeledElement(this.radioButtnos[3], "Custom"), in1, in2, in3]);
+        this.customWidthInput = document.createElement('INPUT') as HTMLInputElement;
+        this.customWidthInput.style.width = '40px';
+        this.customHeightInput = document.createElement('INPUT') as HTMLInputElement;
+        this.customHeightInput.style.width = '40px';
+        this.customBombsInput = document.createElement('INPUT') as HTMLInputElement;
+        this.customBombsInput.style.width = '40px';
+        this.AppendRow(4, [GetLabeledElement(this.radioButtnos[3], "Custom"), this.customWidthInput, this.customHeightInput, this.customBombsInput]);
         this.Check(2);
     }
 
@@ -73,7 +81,7 @@ class GameOptionsTable implements IComponent{
         }
     }
 
-    private OnSelectionChange(gameType: GameTypes){
+    private OnSelectionChange(gameType: GameTypeNames){
         this.gameType = gameType;
         console.log(gameType);
         
@@ -103,12 +111,37 @@ class GameOptionsTable implements IComponent{
 
 export default class GameOptionsTab implements IComponent{
     private element: HTMLDivElement;
+    private got: GameOptionsTable;
+    private eventManager: EventManager;
     
     public constructor(){
+        this.eventManager = new EventManager();
+        this.eventManager.AddEventHandler<OnSubmitArgs>("OnSubmit");
+
         this.element = document.createElement('DIV') as HTMLDivElement;
-        const got = new GameOptionsTable();
-        
-        this.element.appendChild(got.GetComponent());
+
+        this.got = new GameOptionsTable();
+        this.element.appendChild(this.got.GetComponent());
+
+        const subBTN = document.createElement('BUTTON') as HTMLButtonElement;
+        subBTN.innerText = "Create";
+        subBTN.addEventListener('click', () => { this.Submited(); })
+        this.element.appendChild(subBTN);
+
+    }
+
+    public get CustomValue(){
+        return this.got.CustomValue;
+    }
+
+    public AddOnSubmitEventListener( func: (args: OnSubmitArgs) => void )
+    {
+        this.eventManager.GetEventHandler('OnSubmit').AddEventListener(func);
+    }
+
+    private Submited(){
+        const onSubmitEventHandler = this.eventManager.GetEventHandler('OnSubmit') as EventHandler<OnSubmitArgs>;
+        onSubmitEventHandler.ExecuteListeners({gameType: this.got.GameType});
     }
 
 
