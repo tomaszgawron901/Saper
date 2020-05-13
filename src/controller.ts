@@ -7,6 +7,7 @@ import Cell, { CellClickTypes } from "./components/Cell";
 import { IGameType, BaseGameTypes, GameTypeNames, BaseGameTypeNames, GameType} from "./logic/gameTypes";
 import { LogMethod } from "./logDecorators";
 import GameOptionsTab, { OnSubmitArgs } from "./components/GameOptionsTab";
+import LocalStorageManager from './localStorageManager';
 
 export default class Controller {
     public gameContainerElement: GameContainer;
@@ -17,8 +18,29 @@ export default class Controller {
     private gameTypeName: GameTypeNames;
 
     public constructor(){
-        this.gameType = BaseGameTypes[BaseGameTypeNames.intermediate];
+        this.PullGamePropsFromStorage();
         this.InitializeController();
+    }
+
+    private PushGamePropsToStorage(){
+        LocalStorageManager.SetLastGameProps(this.gameTypeName, this.gameType);
+    }
+
+    private PullGamePropsFromStorage(){
+        let GameProps: {gameTypeName: GameTypeNames, gameType: GameType};
+        try{
+            GameProps = LocalStorageManager.GetLastGameProps();
+        }
+        catch{
+            GameProps = null;
+        }
+
+        if(GameProps == null){
+            GameProps = {gameTypeName: GameTypeNames.beginner, gameType: BaseGameTypes[BaseGameTypeNames.beginner]};
+        }
+        
+        this.gameTypeName = GameProps.gameTypeName;
+        this.gameType = GameProps.gameType;
     }
 
     private InitializeController(){
@@ -69,7 +91,7 @@ export default class Controller {
         this.gameOptionsTab.AddOnSubmitEventListener( (args: OnSubmitArgs) => {
             this.OnGameTypeSubmit(args);
         } );
-
+        this.gameOptionsTab.Check(this.gameTypeName);
     }
 
     private InitializeGameComponent(){
@@ -186,6 +208,7 @@ export default class Controller {
         }
         this.gameTypeName = args.gameType;
         this.NewGame();
+        this.PushGamePropsToStorage()
     }
 
     private OnWrongArgsSubmit(){
