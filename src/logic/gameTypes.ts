@@ -1,3 +1,17 @@
+
+enum BaseGameTypeNames{
+    beginner = 0,
+    intermediate = 1,
+    expert = 2
+}
+
+enum GameTypeNames{
+    beginner = 0,
+    intermediate = 1,
+    expert = 2,
+    custom = 3
+}
+
 interface IGameType{
     width: number;
     height: number;
@@ -22,10 +36,11 @@ class GameType implements IGameType{
     }
 }
 
-const BaseGameTypes = {
-    beginner: new GameType(8, 8, 10),
-    intermediate: new GameType(16, 16, 40),
-    Expert: new GameType(30, 16, 99)
+
+const BaseGameTypes: {[index in BaseGameTypeNames]: GameType} = {
+    [BaseGameTypeNames.beginner]: new GameType(8, 8, 10),
+    [BaseGameTypeNames.intermediate]: new GameType(16, 16, 40),
+    [BaseGameTypeNames.expert]: new GameType(30, 16, 99)
 }
 
-export {IGameType, GameType, BaseGameTypes};
+export {IGameType, GameType, BaseGameTypes, GameTypeNames, BaseGameTypeNames};
