@@ -24,23 +24,13 @@ export default class Controller {
     private InitializeController(){
         this.InitializeGame();
         this.InitializeGameOptionsTab();
+        this.InitializeGameComponent();
 
-        this.gameContainerElement = new GameContainer();
-        this.gameContainerElement.Head.LeftCounter.SetValue(this.gameType.bombs);
-        this.gameContainerElement.SetNewBoard({width: this.gameType.width, height: this.gameType.height});
-        this.gameContainerElement.Board.AddOnClickListener( (args: OnCellClickArgs) => {
-            this.OnClick(args);
-        } );
-        this.gameContainerElement.Head.NewGameBTN.AddOnClickListener( () => {this.OnReset()} );
     }
 
     public NewGame(){
         this.gameContainerElement.Head.NewGameBTN.SetImage("images/e1.png");
-        this.gameContainerElement.Head.LeftCounter.SetValue(this.gameType.bombs);
-        this.gameContainerElement.SetNewBoard({width: this.gameType.width, height: this.gameType.height});
-        this.gameContainerElement.Board.AddOnClickListener( (args: OnCellClickArgs) => {
-            this.OnClick(args);
-        } );
+        this.UpdateGameComponentSize();
         this.InitializeGame();
     }
 
@@ -80,6 +70,20 @@ export default class Controller {
             this.OnGameTypeSubmit(args);
         } );
 
+    }
+
+    private InitializeGameComponent(){
+        this.gameContainerElement = new GameContainer();
+        this.UpdateGameComponentSize();
+        this.gameContainerElement.Head.NewGameBTN.AddOnClickListener( () => {this.OnReset()} );
+    }
+
+    private UpdateGameComponentSize(){
+        this.gameContainerElement.Head.LeftCounter.SetValue(this.gameType.bombs);
+        this.gameContainerElement.SetNewBoard({width: this.gameType.width, height: this.gameType.height});
+        this.gameContainerElement.Board.AddOnClickListener( (args: OnCellClickArgs) => {
+            this.OnClick(args);
+        } );
     }
 
 
@@ -185,7 +189,7 @@ export default class Controller {
     }
 
     private OnWrongArgsSubmit(){
-
+        // TODO
     }
 
 }

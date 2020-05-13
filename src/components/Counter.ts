@@ -15,6 +15,7 @@ export default class Counter implements IComponent{
         for(let i = 0; i < decimalPlaces; i++)
         {
             this.CounterDigits[i] = new CounterDigit();
+            this.element.appendChild(this.CounterDigits[i].GetComponent());
         }
     }
 
@@ -29,10 +30,6 @@ export default class Counter implements IComponent{
     }
 
     public GetComponent() {
-        this.element.innerHTML = "";
-        this.CounterDigits.forEach(digit => {
-            this.element.appendChild(digit.GetComponent());
-        });
         return this.element;
     }
 }
