@@ -63,7 +63,6 @@ class GameOptionsTable implements IComponent{
         this.customBombsInput = document.createElement('INPUT') as HTMLInputElement;
         this.customBombsInput.style.width = '40px';
         this.AppendRow(4, [GetLabeledElement(this.radioButtnos[3], "Custom"), this.customWidthInput, this.customHeightInput, this.customBombsInput]);
-        this.Check(2);
     }
 
     private InitializeRadioButtons(){
@@ -83,8 +82,6 @@ class GameOptionsTable implements IComponent{
 
     private OnSelectionChange(gameType: GameTypeNames){
         this.gameType = gameType;
-        console.log(gameType);
-        
     }
 
     private AppendRow(index: number = 0, elements: Array<HTMLElement | string>){
@@ -132,6 +129,10 @@ export default class GameOptionsTab implements IComponent{
 
     public get CustomValue(){
         return this.got.CustomValue;
+    }
+
+    public Check(gameType: GameTypeNames){
+        this.got.Check(gameType);
     }
 
     public AddOnSubmitEventListener( func: (args: OnSubmitArgs) => void )
