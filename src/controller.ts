@@ -4,21 +4,26 @@ import Board, {OnCellClickArgs} from './components/Board';
 import Position from "./logic/Position";
 import EventHandler from "./events/EventHandler";
 import Cell, { CellClickTypes } from "./components/Cell";
-import { IGameType, BaseGameTypes } from "./logic/gameTypes";
+import { IGameType, BaseGameTypes, GameTypeNames, BaseGameTypeNames, GameType} from "./logic/gameTypes";
+import { LogMethod } from "./logDecorators";
+import GameOptionsTab, { OnSubmitArgs } from "./components/GameOptionsTab";
 
 export default class Controller {
     public gameContainerElement: GameContainer;
+    public gameOptionsTab: GameOptionsTab;
     public game: Game;
 
     private gameType: IGameType;
+    private gameTypeName: GameTypeNames;
 
     public constructor(){
-        this.gameType = BaseGameTypes.Expert;
-        this.NewGame();
+        this.gameType = BaseGameTypes[BaseGameTypeNames.intermediate];
+        this.InitializeController();
     }
 
-    public NewGame(){
-        this.InitializeGame()
+    private InitializeController(){
+        this.InitializeGame();
+        this.InitializeGameOptionsTab();
 
         this.gameContainerElement = new GameContainer();
         this.gameContainerElement.Head.LeftCounter.SetValue(this.gameType.bombs);
@@ -27,6 +32,16 @@ export default class Controller {
             this.OnClick(args);
         } );
         this.gameContainerElement.Head.NewGameBTN.AddOnClickListener( () => {this.OnReset()} );
+    }
+
+    public NewGame(){
+        this.gameContainerElement.Head.NewGameBTN.SetImage("images/e1.png");
+        this.gameContainerElement.Head.LeftCounter.SetValue(this.gameType.bombs);
+        this.gameContainerElement.SetNewBoard({width: this.gameType.width, height: this.gameType.height});
+        this.gameContainerElement.Board.AddOnClickListener( (args: OnCellClickArgs) => {
+            this.OnClick(args);
+        } );
+        this.InitializeGame();
     }
 
     private InitializeGame(){
@@ -59,6 +74,14 @@ export default class Controller {
         })
     }
 
+    private InitializeGameOptionsTab(){
+        this.gameOptionsTab = new GameOptionsTab();
+        this.gameOptionsTab.AddOnSubmitEventListener( (args: OnSubmitArgs) => {
+            this.OnGameTypeSubmit(args);
+        } );
+
+    }
+
 
     private OnClick(args: OnCellClickArgs){
         if(args.type == CellClickTypes.leftClick){
@@ -81,8 +104,6 @@ export default class Controller {
         this.game.Mark(new Position(x, y));
         console.log(x, y, 'Right Click');
     }
-
-
 
     private OnCellChange(args: OnCellChangeArgs){
         let imgPath: string;
@@ -118,6 +139,7 @@ export default class Controller {
 
     }
 
+    @LogMethod
     private OnReset(){
         this.gameContainerElement.Head.NewGameBTN.SetImage("images/e1.png");
         this.gameContainerElement.Reset();
@@ -139,7 +161,31 @@ export default class Controller {
 
     private OnBombsToDisarmChange(args: OnBombsToDisarmChangedArgs){
         this.gameContainerElement.Head.LeftCounter.SetValue(args.bombsToDisarm);
-        
+    }
+
+    @LogMethod
+    private OnGameTypeSubmit(args: OnSubmitArgs)
+    {
+        if(args.gameType != GameTypeNames.custom)
+        {
+            this.gameType = BaseGameTypes[args.gameType as unknown as BaseGameTypeNames];
+        }
+        else{
+            try{
+                const cs = this.gameOptionsTab.CustomValue;
+                this.gameType = new GameType(cs.width, cs.height, cs.bombs);
+            }
+            catch{
+                this.OnWrongArgsSubmit();
+                return;
+            }
+        }
+        this.gameTypeName = args.gameType;
+        this.NewGame();
+    }
+
+    private OnWrongArgsSubmit(){
+
     }
 
 }
