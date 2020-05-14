@@ -20,6 +20,7 @@ export default class GameContainer implements IComponent {
         this.boardContainer = document.createElement('DIV');
         this.boardContainer.classList.add("ReversedBorderedContainer");
         this.boardContainer.style.marginTop = "10px";
+        this.boardContainer.style.userSelect = 'none';
 
         this.head = new HeadContainer();
         this.SetNewBoard({width: 15, height: 15});

@@ -178,7 +178,7 @@ export default class GameOptionsMenuTab implements IComponent{
         this.element.style.height = GameOptionsMenuTab.height;
         this.nameElement = document.createElement('DIV') as HTMLDivElement;
         this.nameElement.innerHTML = GameOptionsMenuTab.tabName;
-        this.nameElement.style.userSelect = 'none';
+        this.element.style.userSelect = 'none';
         this.nameElement.classList.add('MenuTab');
         this.element.appendChild(this.nameElement);
         this.element.appendChild(this.gameOptionsTabElement);
