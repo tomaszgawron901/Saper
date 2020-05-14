@@ -33,6 +33,16 @@ button.BorderedContainer:active {
   background-color: rgb(196, 196, 196);
 }
 
+.MenuTab{
+  border-width: 3px;
+  border-style: solid;
+  width: fit-content;
+  border-top-color: white;
+  border-left-color: white;
+  border-right-color: white;
+  background-color: rgb(196, 196, 196);
+}
+
 
 .CellInterior{
   box-sizing: border-box;

@@ -6,12 +6,12 @@ import EventHandler from "./events/EventHandler";
 import Cell, { CellClickTypes } from "./components/Cell";
 import { IGameType, BaseGameTypes, GameTypeNames, BaseGameTypeNames, GameType} from "./logic/gameTypes";
 import { LogMethod } from "./logDecorators";
-import GameOptionsTab, { OnSubmitArgs } from "./components/GameOptionsTab";
+import GameOptionsMenuTab, { OnSubmitArgs } from "./components/GameOptionsMenuTab";
 import LocalStorageManager from './localStorageManager';
 
 export default class Controller {
     public gameContainerElement: GameContainer;
-    public gameOptionsTab: GameOptionsTab;
+    public gameOptionsMenuTab: GameOptionsMenuTab;
     public game: Game;
 
     private gameType: IGameType;
@@ -87,11 +87,11 @@ export default class Controller {
     }
 
     private InitializeGameOptionsTab(){
-        this.gameOptionsTab = new GameOptionsTab();
-        this.gameOptionsTab.AddOnSubmitEventListener( (args: OnSubmitArgs) => {
+        this.gameOptionsMenuTab = new GameOptionsMenuTab();
+        this.gameOptionsMenuTab.gameOptionsTab.AddOnSubmitEventListener( (args: OnSubmitArgs) => {
             this.OnGameTypeSubmit(args);
         } );
-        this.gameOptionsTab.Check(this.gameTypeName);
+        this.gameOptionsMenuTab.gameOptionsTab.Check(this.gameTypeName);
     }
 
     private InitializeGameComponent(){
@@ -198,7 +198,7 @@ export default class Controller {
         }
         else{
             try{
-                const cs = this.gameOptionsTab.CustomValue;
+                const cs = this.gameOptionsMenuTab.gameOptionsTab.CustomValue;
                 this.gameType = new GameType(cs.width, cs.height, cs.bombs);
             }
             catch{
@@ -209,7 +209,8 @@ export default class Controller {
         this.gameTypeName = args.gameType;
         this.gameContainerElement.Reset();
         this.NewGame();
-        this.PushGamePropsToStorage()
+        this.PushGamePropsToStorage();
+        this.gameOptionsMenuTab.Close();
     }
 
     private OnWrongArgsSubmit(){

@@ -106,7 +106,7 @@ class GameOptionsTable implements IComponent{
 }
 
 
-export default class GameOptionsTab implements IComponent{
+class GameOptionsTab implements IComponent{
     private element: HTMLDivElement;
     private got: GameOptionsTable;
     private eventManager: EventManager;
@@ -151,6 +151,58 @@ export default class GameOptionsTab implements IComponent{
         onSubmitEventHandler.ExecuteListeners({gameType: this.got.GameType});
     }
 
+
+    public GetComponent(){
+        return this.element;
+    }
+}
+
+export default class GameOptionsMenuTab implements IComponent{
+    private element: HTMLDivElement
+    public readonly gameOptionsTab: GameOptionsTab;
+
+    private gameOptionsTabElement: HTMLElement;
+    private nameElement: HTMLElement;
+
+    private static tabName = "Game";
+    private static height = "20px";
+
+    public constructor(){
+        this.gameOptionsTab = new GameOptionsTab();
+        this.gameOptionsTabElement = this.gameOptionsTab.GetComponent();
+        this.gameOptionsTabElement.style.position = 'relative';
+        this.gameOptionsTabElement.style.visibility = 'hidden';
+        this.gameOptionsTabElement.style.top = '-5px';
+
+        this.element = document.createElement('DIV') as HTMLDivElement;
+        this.element.style.height = GameOptionsMenuTab.height;
+        this.nameElement = document.createElement('DIV') as HTMLDivElement;
+        this.nameElement.innerHTML = GameOptionsMenuTab.tabName;
+        this.nameElement.style.userSelect = 'none';
+        this.nameElement.classList.add('MenuTab');
+        this.element.appendChild(this.nameElement);
+        this.element.appendChild(this.gameOptionsTabElement);
+
+        this.nameElement.onclick = () => {
+            if(this.gameOptionsTabElement.style.visibility == 'hidden')
+            {
+                this.Open();
+            }else{
+                this.Close();
+            }
+        }
+    }
+
+    public Close(){
+        this.gameOptionsTabElement.style.visibility = 'hidden';
+        this.nameElement.style.fontWeight = 'normal';
+    }
+
+    public Open(){
+        this.gameOptionsTabElement.style.visibility = 'visible';
+        this.nameElement.style.fontWeight = 'bold';
+    }
+    
 
     public GetComponent(){
         return this.element;
