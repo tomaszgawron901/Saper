@@ -1,4 +1,4 @@
-import IComponent from "./IComponent";
+import IComponent from "../IComponent";
 import Counter from "./Counter";
 import NewGameBTN from "./NewGameBTN";
 

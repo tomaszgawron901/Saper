@@ -1,4 +1,4 @@
-import IComponent from './IComponent';
+import IComponent from '../IComponent';
 
 export default class Counter implements IComponent{
     private element: HTMLElement;

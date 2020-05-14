@@ -1,5 +1,5 @@
-import IComponent from './IComponent';
-import Clickable from './Clickable';
+import IComponent from '../IComponent';
+import Clickable from '../Clickable';
 import Cell, {CellClickTypes} from './Cell';
 
 export interface OnCellClickArgs{

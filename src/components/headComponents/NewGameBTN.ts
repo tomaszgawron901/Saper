@@ -1,5 +1,5 @@
-import Clickable from "./Clickable";
-import IComponent from "./IComponent";
+import Clickable from "../Clickable";
+import IComponent from "../IComponent";
 
 
 export interface OnNewGameBTNClickArgs{

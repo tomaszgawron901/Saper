@@ -1,6 +1,6 @@
 import IComponent from './IComponent';
-import Board from './Board';
-import HeadContainer from './HeadContainer';
+import Board from './boardComponents/Board';
+import HeadContainer from './headComponents/HeadContainer';
 
 export default class GameContainer implements IComponent {
     private board: Board;

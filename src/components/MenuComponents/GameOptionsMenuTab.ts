@@ -1,7 +1,7 @@
-import IComponent from "./IComponent";
-import EventManager from "../events/EventManager";
-import EventHandler from "../events/EventHandler";
-import {GameTypeNames} from '../logic/gameTypes';
+import IComponent from "../IComponent";
+import EventManager from "../../events/EventManager";
+import EventHandler from "../../events/EventHandler";
+import {GameTypeNames} from '../../logic/gameTypes';
 
 
 export interface OnSubmitArgs{
