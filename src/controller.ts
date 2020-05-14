@@ -207,6 +207,7 @@ export default class Controller {
             }
         }
         this.gameTypeName = args.gameType;
+        this.gameContainerElement.Reset();
         this.NewGame();
         this.PushGamePropsToStorage()
     }
