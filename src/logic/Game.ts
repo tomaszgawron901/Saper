@@ -9,7 +9,9 @@ export interface OnCellChangeArgs{
     cell: Cell;
 }
 
-export interface OnWinArgs{}
+export interface OnWinArgs{
+    time: number;
+}
 
 export interface OnDefeatArgs{
     lastOpenedIndex: number;
@@ -240,7 +242,7 @@ export default class Game{
 
     private GameWon(){
         const WinEventHandler = this.eventManager.GetEventHandler(GameEvents.win) as EventHandler<OnWinArgs>;
-        const args: OnWinArgs = {};
+        const args: OnWinArgs = { time: Date.now() - this.timer.TimerStart };
         WinEventHandler.ExecuteListeners(args);
     }
 
@@ -332,7 +334,6 @@ export default class Game{
             this.board[neighborIndex].AddNeigbourBomb();
         });
     }
-
 
     public Dispatch(){
         this.timer.Stop();
