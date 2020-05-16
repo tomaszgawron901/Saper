@@ -8,10 +8,10 @@ import { IGameType, BaseGameTypes, GameTypeNames, BaseGameTypeNames, GameType} f
 import { LogMethod } from "./logDecorators";
 import GameOptionsMenuTab, { OnSubmitArgs } from "./components/MenuComponents/GameOptionsMenuTab";
 import LocalStorageManager from './localStorageManager';
+import GameOptionsTab from "./components/MenuComponents/GameOptionsMenuTab";
 
 export default class Controller {
     public gameContainerElement: GameContainer;
-    public gameOptionsMenuTab: GameOptionsMenuTab;
     public game: Game;
 
     private gameType: IGameType;
@@ -45,8 +45,8 @@ export default class Controller {
 
     private InitializeController(){
         this.InitializeGame();
-        this.InitializeGameOptionsTab();
         this.InitializeGameComponent();
+        this.InitializeGameOptionsTab();
 
     }
 
@@ -87,11 +87,11 @@ export default class Controller {
     }
 
     private InitializeGameOptionsTab(){
-        this.gameOptionsMenuTab = new GameOptionsMenuTab();
-        this.gameOptionsMenuTab.gameOptionsTab.AddOnSubmitEventListener( (args: OnSubmitArgs) => {
+        const gameOptionsTab = this.gameContainerElement.Menu.GetItemByName("Game").Item as GameOptionsTab;
+        gameOptionsTab.AddOnSubmitEventListener( (args: OnSubmitArgs) => {
             this.OnGameTypeSubmit(args);
         } );
-        this.gameOptionsMenuTab.gameOptionsTab.Check(this.gameTypeName);
+        gameOptionsTab.Check(this.gameTypeName);
     }
 
     private InitializeGameComponent(){
@@ -198,7 +198,7 @@ export default class Controller {
         }
         else{
             try{
-                const cs = this.gameOptionsMenuTab.gameOptionsTab.CustomValue;
+                const cs = (this.gameContainerElement.Menu.GetItemByName('Game').Item as GameOptionsTab).CustomValue;
                 this.gameType = new GameType(cs.width, cs.height, cs.bombs);
             }
             catch{
@@ -210,7 +210,7 @@ export default class Controller {
         this.gameContainerElement.Reset();
         this.NewGame();
         this.PushGamePropsToStorage();
-        this.gameOptionsMenuTab.Close();
+        this.gameContainerElement.Menu.GetItemByName('Game').Close();
     }
 
     private OnWrongArgsSubmit(){
