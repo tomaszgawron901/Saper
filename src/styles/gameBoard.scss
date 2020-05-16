@@ -1,0 +1,34 @@
+.CellInterior{
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+}
+
+.CellContainer{
+    width: 24px;
+    height: 24px;
+}
+
+.CellEnabled{
+    background-color: rgb(196, 196, 196);
+}
+
+.CellEnabled:hover{
+    background-color: rgb(180, 180, 180);
+}
+
+.BoardRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.BoardContainer{
+    width: fit-content;
+    height: fit-content;
+}
+
+.GameContainer{
+    width: fit-content;
+    height: fit-content;
+    padding: 10px;
+}

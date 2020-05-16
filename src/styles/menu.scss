@@ -1,0 +1,30 @@
+.Menu{
+    height: 20px;
+  }
+  
+.MenuItemLabel{
+box-sizing: border-box;
+user-select: none;
+border-width: 3px;
+border-style: solid;
+width: fit-content;
+border-top-color: white;
+border-left-color: white;
+border-right-color: white;
+background-color: rgb(196, 196, 196);
+}
+  
+.MenuItemContainer{
+position: relative;
+top: -5px;
+//box-shadow: 10px 10px 20px 2px rgba(0,0,0,0.44);
+}
+
+.OptionsTab{
+    background-color: rgb(230, 230, 230);
+    border: black 2px solid;
+}
+  
+.OptionsTabHead{
+background-color: rgb(190, 190, 190);
+}
