@@ -1,6 +1,16 @@
 import IComponent from "../IComponent";
+import Clickable from "../Clickable";
 
-export default class MenuItem implements IComponent{
+export enum MenuItemViewActions{
+    open,
+    close
+}
+
+export interface OnMenuItemLabelClickArgs{
+    action: MenuItemViewActions;
+}
+
+export default class MenuItem extends Clickable<OnMenuItemLabelClickArgs> implements IComponent{
     private element: HTMLDivElement;
     private label: HTMLDivElement;
     private itemContainer: HTMLDivElement;
@@ -18,6 +28,7 @@ export default class MenuItem implements IComponent{
 
     public constructor(name: string, item: IComponent)
     {
+        super();
         this.opened = false;
         this.InitializeLabel();
         this.InitializeItemContainer();
@@ -75,11 +86,11 @@ export default class MenuItem implements IComponent{
     private OnLabelClick(){
         if(this.opened)
         {
-            this.Close();
+            this.Clicked({ action: MenuItemViewActions.close });
         }
         else
         {
-            this.Open();
+            this.Clicked({ action: MenuItemViewActions.open });
         }
     }
 

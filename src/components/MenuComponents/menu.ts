@@ -1,4 +1,4 @@
-import MenuItem from "./menuItem";
+import MenuItem, { OnMenuItemLabelClickArgs, MenuItemViewActions } from "./menuItem";
 import IComponent from "../IComponent";
 
 
@@ -32,6 +32,14 @@ export default class Menu implements IComponent{
         if(index > this.items.length) { index = this.items.length }
 
         const item = new MenuItem(name, element);
+        item.AddOnClickListener( (args: OnMenuItemLabelClickArgs) => {
+            if(args.action == MenuItemViewActions.close){
+                item.Close();
+            }else{
+                this.CloseAllItems();
+                item.Open();
+            }
+        } );
         const newItems = new Array<MenuItem>();
         for(let i = 0; i < index; i++)
         {
@@ -44,6 +52,12 @@ export default class Menu implements IComponent{
         }
         this.items = newItems;
         this.ReloadItems();
+    }
+
+    private CloseAllItems(){
+        this.items.forEach(item => {
+            item.Close();
+        });
     }
 
     public GetItemByIndex(index: number)
