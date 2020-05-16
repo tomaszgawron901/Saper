@@ -21,18 +21,34 @@ export default class GameContainer implements IComponent {
         return this.menu;
     }
 
-    private boardContainer: HTMLElement;
+    private element: HTMLElement;
+    private boardContainer: HTMLDivElement;
 
     public constructor(){
-        this.boardContainer = document.createElement('DIV');
-        this.boardContainer.classList.add("ReversedBorderedContainer");
-        this.boardContainer.style.marginTop = "10px";
-        this.boardContainer.style.userSelect = 'none';
-
-        this.head = new HeadContainer();
-        
+        this.InitializeHead();
         this.InitializeMenu();
-        this.SetNewBoard({width: 15, height: 15});
+        this.InitializeBoardContainer();
+        this.InitializeElement();
+    }
+
+    private InitializeElement(){
+        this.element = document.createElement('DIV') as HTMLDivElement;
+
+        const mainContainer = document.createElement('DIV');
+        mainContainer.classList.add("GameContainer");
+        mainContainer.classList.add("BorderedContainer");
+        mainContainer.addEventListener('contextmenu', event => event.preventDefault());
+
+        const headConteiner = document.createElement('DIV');
+        headConteiner.classList.add("ReversedBorderedContainer");
+        headConteiner.classList.add("HeadContainer");
+        headConteiner.appendChild(this.head.GetComponent());
+
+        mainContainer.appendChild(headConteiner);
+        mainContainer.appendChild(this.boardContainer);
+
+        this.element.appendChild(this.menu.GetComponent());
+        this.element.appendChild(mainContainer);
     }
 
     private InitializeMenu(){
@@ -40,6 +56,16 @@ export default class GameContainer implements IComponent {
         this.menu.AddItem(0, "Game", new GameOptionsTab());
     }
 
+    private InitializeHead(){
+        this.head = new HeadContainer();
+    }
+
+    private InitializeBoardContainer(){
+        this.boardContainer = document.createElement('DIV') as HTMLDivElement;
+        this.boardContainer.classList.add("ReversedBorderedContainer");
+        this.boardContainer.style.marginTop = "10px";
+        this.boardContainer.style.userSelect = 'none';
+    }
 
     public SetNewBoard( size: {width: number, height: number}) {
         this.board = new Board(size);
@@ -48,22 +74,7 @@ export default class GameContainer implements IComponent {
     }
 
     public GetComponent() {
-        const container = document.createElement('DIV');
-        container.classList.add("GameContainer");
-        container.classList.add("BorderedContainer");
-        container.addEventListener('contextmenu', event => event.preventDefault());
-
-
-        const headConteiner = document.createElement('DIV');
-        headConteiner.classList.add("ReversedBorderedContainer");
-        headConteiner.classList.add("HeadContainer");
-        headConteiner.appendChild(this.head.GetComponent());
-
-        container.appendChild(this.menu.GetComponent());
-        container.appendChild(headConteiner);
-        container.appendChild(this.boardContainer);
-
-        return container;
+        return this.element;
     }
 
     public Reset(){
