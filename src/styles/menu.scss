@@ -1,22 +1,22 @@
 .Menu{
     height: 20px;
+    display: flex;
+    flex-direction: row;
   }
   
 .MenuItemLabel{
 box-sizing: border-box;
 user-select: none;
-border-width: 3px;
-border-style: solid;
 width: fit-content;
-border-top-color: white;
-border-left-color: white;
-border-right-color: white;
+border: solid white 2px;
 background-color: rgb(196, 196, 196);
+margin-left: 1px;
+margin-right: 1px;
 }
   
 .MenuItemContainer{
 position: relative;
-top: -5px;
+top: -2px;
 box-shadow: 10px 10px 20px 2px rgba(0,0,0,0.44);
 width: fit-content;
 }
