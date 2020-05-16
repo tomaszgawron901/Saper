@@ -20,6 +20,11 @@ export default class Timer implements ITimerChangeHandler{
     private started: boolean;
     private eventManager: EventManager;
     private interval: NodeJS.Timeout;
+    private timerStart: number;
+
+    public get TimerStart(){
+        return this.timerStart;
+    }
 
     public constructor(startValue: number = 0, step: number = 1, frequency: number = 1){
         this.eventManager = new EventManager()
@@ -54,8 +59,7 @@ export default class Timer implements ITimerChangeHandler{
         this.interval = setInterval(() => {
             this.MoveByStep();
         }, 1000/this.frequency);
-
-
+        this.timerStart = Date.now();
     }
 
     public Stop(){
