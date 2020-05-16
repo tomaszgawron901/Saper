@@ -15,6 +15,7 @@ export default class NewGameBTN extends Clickable<OnNewGameBTNClickArgs> impleme
         this.element = document.createElement('DIV');
         this.element.classList.add('NewGameBTN');
         this.element.classList.add('BorderedContainer');
+        this.element.classList.add('Clickable');
         this.element.classList.add('CellEnabled');
 
         this.SetImage('images/e1.png');
