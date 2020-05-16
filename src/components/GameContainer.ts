@@ -1,10 +1,13 @@
 import IComponent from './IComponent';
 import Board from './boardComponents/Board';
 import HeadContainer from './headComponents/HeadContainer';
+import Menu from './MenuComponents/menu';
+import GameOptionsTab from './MenuComponents/GameOptionsMenuTab';
 
 export default class GameContainer implements IComponent {
     private board: Board;
     private head: HeadContainer;
+    private menu: Menu;
 
     public get Board(): Board{
         return this.board;
@@ -12,6 +15,10 @@ export default class GameContainer implements IComponent {
 
     public get Head(): HeadContainer{
         return this.head;
+    }
+
+    public get Menu(): Menu{
+        return this.menu;
     }
 
     private boardContainer: HTMLElement;
@@ -23,7 +30,14 @@ export default class GameContainer implements IComponent {
         this.boardContainer.style.userSelect = 'none';
 
         this.head = new HeadContainer();
+        
+        this.InitializeMenu();
         this.SetNewBoard({width: 15, height: 15});
+    }
+
+    private InitializeMenu(){
+        this.menu = new Menu();
+        this.menu.AddItem(0, "Game", new GameOptionsTab());
     }
 
 
@@ -45,6 +59,7 @@ export default class GameContainer implements IComponent {
         headConteiner.classList.add("HeadContainer");
         headConteiner.appendChild(this.head.GetComponent());
 
+        container.appendChild(this.menu.GetComponent());
         container.appendChild(headConteiner);
         container.appendChild(this.boardContainer);
 
