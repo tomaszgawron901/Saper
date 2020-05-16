@@ -41,8 +41,13 @@ export default class MenuItem extends Clickable<OnMenuItemLabelClickArgs> implem
     private InitializeElement(){
         this.element = document.createElement('DIV') as HTMLDivElement;
 
+        const dummyDiv = document.createElement('DIV') as HTMLDivElement;
+        dummyDiv.style.width = '0px';
+        dummyDiv.style.height = '0px';
+        dummyDiv.appendChild(this.itemContainer)
+
         this.element.appendChild(this.label);
-        this.element.appendChild(this.itemContainer);
+        this.element.appendChild(dummyDiv);
     }
 
     private InitializeLabel(){
