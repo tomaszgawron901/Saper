@@ -179,6 +179,7 @@ export default class Controller {
         this.gameContainerElement.Board.cells[args.lastOpenedIndex].SetBackgroundColor("red");
     }
 
+    @LogMethod
     private OnGameWin(args: OnWinArgs)
     {
         this.gameContainerElement.Head.NewGameBTN.SetImage("images/e4.png");
