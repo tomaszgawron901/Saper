@@ -1,12 +1,12 @@
 import GameContainer from "./components/GameContainer";
 import Game, {GameEvents, OnCellChangeArgs, OnDefeatArgs, OnWinArgs, OnBombsToDisarmChangedArgs} from "./logic/Game";
-import Board, {OnCellClickArgs} from './components/boardComponents/Board';
+import {OnCellClickArgs} from './components/boardComponents/Board';
 import Position from "./logic/Position";
 import EventHandler from "./events/EventHandler";
-import Cell, { CellClickTypes } from "./components/boardComponents/Cell";
+import { CellClickTypes } from "./components/boardComponents/Cell";
 import { IGameType, BaseGameTypes, GameTypeNames, BaseGameTypeNames, GameType} from "./logic/gameTypes";
 import { LogMethod } from "./logDecorators";
-import GameOptionsMenuTab, { OnSubmitArgs } from "./components/MenuComponents/GameOptionsMenuTab";
+import { OnSubmitArgs } from "./components/MenuComponents/GameOptionsMenuTab";
 import LocalStorageManager from './localStorageManager';
 import GameOptionsTab from "./components/MenuComponents/GameOptionsMenuTab";
 

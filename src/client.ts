@@ -12,3 +12,5 @@ socket.onmessage = function(event) {
 document.getElementById('send').addEventListener('click', () => {
     socket.send('new message')
 })
+
+export {socket};

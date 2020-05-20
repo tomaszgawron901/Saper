@@ -1,7 +1,7 @@
-import * as http from 'http';
+import { createServer, IncomingMessage, ServerResponse } from 'http';
 import * as websocket from 'ws';
 
-const server = http.createServer((req, res) => {
+const server = createServer((req: IncomingMessage, res: ServerResponse) => {
     res.end("I'm connected");
 });
 
@@ -14,3 +14,5 @@ socket.on('connection', function connection(ws) {
     ws.send('something');
   });
 server.listen(8080);
+
+export {server}
