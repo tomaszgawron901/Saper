@@ -10,7 +10,7 @@ import { OnSubmitArgs } from "./components/MenuComponents/GameOptionsMenuTab";
 import LocalStorageManager from './localStorageManager';
 import GameOptionsTab from "./components/MenuComponents/GameOptionsMenuTab";
 
-export default class Controller {
+export default class Controller { 
     public gameContainerElement: GameContainer;
     public game: Game;
 
@@ -121,14 +121,11 @@ export default class Controller {
     private OnLeftClick(x: number, y: number)
     {
         this.game.Open(new Position(x, y));
-        console.log(x, y, 'Left Click');
-        
     }
 
     private OnRightClick(x: number, y: number)
     {
         this.game.Mark(new Position(x, y));
-        console.log(x, y, 'Right Click');
     }
 
     private OnCellChange(args: OnCellChangeArgs){
@@ -165,7 +162,6 @@ export default class Controller {
 
     }
 
-    @LogMethod
     private OnReset(){
         this.gameContainerElement.Head.NewGameBTN.SetImage("images/e1.png");
         this.gameContainerElement.Reset();
@@ -179,7 +175,6 @@ export default class Controller {
         this.gameContainerElement.Board.cells[args.lastOpenedIndex].SetBackgroundColor("red");
     }
 
-    @LogMethod
     private OnGameWin(args: OnWinArgs)
     {
         this.gameContainerElement.Head.NewGameBTN.SetImage("images/e4.png");
@@ -190,7 +185,6 @@ export default class Controller {
         this.gameContainerElement.Head.LeftCounter.SetValue(args.bombsToDisarm);
     }
 
-    @LogMethod
     private OnGameTypeSubmit(args: OnSubmitArgs)
     {
         if(args.gameType != GameTypeNames.custom)

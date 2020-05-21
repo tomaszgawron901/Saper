@@ -1,7 +1,7 @@
 const path = require("path");
 const CopyPlugin = require("copy-webpack-plugin");
 
-module.exports = {
+const config = {
   mode: "development",
   entry: "./src/index.ts",
   output: {
@@ -49,3 +49,29 @@ module.exports = {
     ]
   }
 };
+
+const serverConfig = {
+  devtool: 'source-map',
+  entry: {
+    'server': './src/server.ts'
+  },
+  target: 'node',
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
+    ],
+  },
+  resolve: {
+    extensions: [ '.tsx', '.ts', '.js'],
+  },
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: '[name].js'
+  }
+};
+
+module.exports = [serverConfig, config];
