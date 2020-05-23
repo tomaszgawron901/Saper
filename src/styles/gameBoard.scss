@@ -9,14 +9,6 @@
     height: 24px;
 }
 
-.CellEnabled{
-    background-color: rgb(196, 196, 196);
-}
-
-.CellEnabled:hover{
-    background-color: rgb(180, 180, 180);
-}
-
 .BoardRow {
     display: flex;
     flex-direction: row;

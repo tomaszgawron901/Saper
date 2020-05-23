@@ -1,47 +1,5 @@
-.BorderedContainer {
-  border-width: 3px;
-  border-style: solid;
-  border-top-color: white;
-  border-left-color: white;
-  border-bottom-color: rgb(110, 110, 110);
-  border-right-color: rgb(110, 110, 110);
-  background-color: rgb(196, 196, 196);
-}
-
-.BorderedContainer.Clickable:active{
-  border-width: 3px;
-  border-style: solid;
-  border-top-color: rgb(110, 110, 110);
-  border-left-color: rgb(110, 110, 110);
-  border-bottom-color: white;
-  border-right-color: white;
-  background-color: rgb(196, 196, 196);
-}
-
-.ReversedBorderedContainer{
-  border-width: 3px;
-  border-style: solid;
-  border-top-color: rgb(110, 110, 110);
-  border-left-color: rgb(110, 110, 110);
-  border-bottom-color: white;
-  border-right-color: white;
-  background-color: rgb(196, 196, 196);
-}
-
-.NonBorderedContainer {
-  border: solid 1px rgb(85, 85, 85);
-  background-color: rgb(184, 184, 184);;
-}
-
-button.BorderedContainer:active {
-  border-width: 3px;
-  border-style: solid;
-  border-top-color: rgb(110, 110, 110);
-  border-left-color: rgb(110, 110, 110);
-  border-bottom-color: white;
-  border-right-color: white;
-  background-color: rgb(196, 196, 196);
-}
+@import './borders';
+@import './themes';
 
 
 .ImgDIV{

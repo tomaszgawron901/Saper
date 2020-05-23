@@ -1,0 +1,81 @@
+@mixin ITheme ($color1, $color2, $color3, $color4, $color5) {
+    .BorderedContainer {
+        @include saper_standard_board($color1, $color4);
+        background-color: $color2;
+      
+        &.Clickable:active{
+          @include saper_standard_board($color4, $color1);
+          background-color: $color2;
+        }
+      }
+      
+      .ReversedBorderedContainer {
+        @include saper_standard_board($color4, $color1);
+        background-color: $color2;
+      
+        &.Clickable:active{
+          @include saper_standard_board($color1, $color4);
+          background-color: $color2;
+        }
+      }
+      
+      .NonBorderedContainer {
+        @include saper_thin_board($color5);
+        background-color: $color3;
+      }
+      
+      button.BorderedContainer:active {
+        @include saper_standard_board($color4, $color1);
+        background-color: $color2;
+      }
+
+      .CellEnabled:hover{
+        background-color: darken($color2, 5%);
+    }
+
+    .MenuItemLabel{
+        box-sizing: border-box;
+        user-select: none;
+        width: fit-content;
+        border: solid $color1 2px;
+        background-color: $color2;
+        margin-left: 1px;
+        margin-right: 1px;
+        }
+}
+
+.normal_theme{
+    $color1: white;
+    $color2: rgb(196, 196, 196);
+    $color3: rgb(184, 184, 184);
+    $color4: rgb(110, 110, 110);
+    $color5: rgb(85, 85, 85);
+    @include ITheme($color1, $color2, $color3, $color4, $color5);
+}
+
+.dark_theme{
+    $color1: darken(white, 20%) ;
+    $color2: darken(rgb(196, 196, 196), 20%);
+    $color3: darken(rgb(184, 184, 184), 20%);
+    $color4: darken(rgb(110, 110, 110), 20%);
+    $color5: darken(rgb(85, 85, 85), 20%);
+    @include ITheme($color1, $color2, $color3, $color4, $color5);
+}
+
+.end_city_theme{
+    $color1: rgb(249, 241, 255);
+    $color2: rgb(227, 196, 252);
+    $color3: rgb(241, 224, 178);
+    $color4: rgb(190, 120, 248);
+    $color5: rgb(107, 107, 107);
+    @include ITheme($color1, $color2, $color3, $color4, $color5);
+}
+
+.high_contrast_theme{
+    $color1: white;
+    $color2: rgb(196, 196, 196);
+    $color3: rgb(255, 255, 255);
+    $color4: rgb(73, 73, 73);
+    $color5: rgb(34, 34, 34);
+    @include ITheme($color1, $color2, $color3, $color4, $color5);
+}

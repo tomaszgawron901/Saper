@@ -1,0 +1,12 @@
+@mixin saper_standard_board($color1, $color2) {
+    border-width: 3px;
+    border-style: solid;
+    border-top-color: $color1;
+    border-left-color: $color1;
+    border-bottom-color: $color2;
+    border-right-color: $color2;
+}
+
+@mixin saper_thin_board($color) {
+    border: solid 1px $color;
+}
