@@ -2,23 +2,14 @@ import IComponent from "../IComponent";
 import EventManager from "../../events/EventManager";
 import EventHandler from "../../events/EventHandler";
 import {GameTypeNames} from '../../logic/gameTypes';
+import {GetLabeledElement} from './functions';
 
 
 export interface OnSubmitArgs{
     gameType: GameTypeNames;
 }
 
-function GetLabeledElement(element: HTMLElement, text: string)
-{
-    const label = document.createElement('LABEL') as HTMLLabelElement;
-    label.style.display = 'flex';
-    label.style.flexDirection = 'row';
-    const textElement = document.createElement('TEXT');
-    textElement.innerText = text;
-    label.appendChild(element);
-    label.appendChild(textElement);
-    return label;
-}
+
 
 class GameOptionsTable implements IComponent{
     private static curentID = 0;
