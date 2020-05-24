@@ -9,8 +9,4 @@ socket.onmessage = function(event) {
   alert('Message received: ' + event.data);
 };
 
-document.getElementById('send').addEventListener('click', () => {
-    socket.send('new message')
-})
-
 export {socket};
