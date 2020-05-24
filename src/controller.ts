@@ -6,7 +6,9 @@ import EventHandler from "./events/EventHandler";
 import { CellClickTypes } from "./components/boardComponents/Cell";
 import { IGameType, BaseGameTypes, GameTypeNames, BaseGameTypeNames, GameType} from "./logic/gameTypes";
 import { LogMethod } from "./logDecorators";
-import { OnSubmitArgs } from "./components/MenuComponents/GameOptionsMenuTab";
+import { OnSubmitArgs as OnGameTypeSubmitArgs } from "./components/MenuComponents/GameOptionsMenuTab";
+import OptionsMenuTab, { OnSubmitArgs as OnThemeTypeSubmitArgs } from "./components/MenuComponents/OptionsMenuTab";
+
 import LocalStorageManager from './localStorageManager';
 import GameOptionsTab from "./components/MenuComponents/GameOptionsMenuTab";
 
@@ -17,8 +19,11 @@ export default class Controller {
     private gameType: IGameType;
     private gameTypeName: GameTypeNames;
 
+    private theme: string;
+
     public constructor(){
         this.PullGamePropsFromStorage();
+        this.PullThemePropsFromStorage();
         this.InitializeController();
     }
 
@@ -43,10 +48,31 @@ export default class Controller {
         this.gameType = GameProps.gameType;
     }
 
+    private PushThemePropsToStorage(){
+        LocalStorageManager.SetLastThemeProps(this.theme);
+    }
+
+    private PullThemePropsFromStorage(){
+        let ThemeProps: {theme: string};
+        try{
+            ThemeProps = LocalStorageManager.GetLastThemeProps();
+        }
+        catch{
+            ThemeProps = null;
+        }
+
+        if(ThemeProps == null){
+            ThemeProps = {theme: "normal_theme"};
+        }
+        
+        this.theme = ThemeProps.theme;
+    }
+
     private InitializeController(){
         this.InitializeGame();
         this.InitializeGameComponent();
         this.InitializeGameOptionsTab();
+        this.InitializeOptionsTab();
 
     }
 
@@ -88,15 +114,24 @@ export default class Controller {
 
     private InitializeGameOptionsTab(){
         const gameOptionsTab = this.gameContainerElement.Menu.GetItemByName("Game").Item as GameOptionsTab;
-        gameOptionsTab.AddOnSubmitEventListener( (args: OnSubmitArgs) => {
+        gameOptionsTab.AddOnSubmitEventListener( (args: OnGameTypeSubmitArgs) => {
             this.OnGameTypeSubmit(args);
         } );
         gameOptionsTab.Check(this.gameTypeName);
     }
 
+    private InitializeOptionsTab(){
+        const optionsMenuTab = this.gameContainerElement.Menu.GetItemByName("Options").Item as OptionsMenuTab;
+        optionsMenuTab.AddOnSubmitEventListener( (args: OnThemeTypeSubmitArgs) => {
+            this.OnThemeTypeSubmit(args);
+        } );
+        optionsMenuTab.themeList.Check(this.theme);
+    }
+
     private InitializeGameComponent(){
         this.gameContainerElement = new GameContainer();
         this.UpdateGameComponentSize();
+        this.gameContainerElement.SetTheme(this.theme);
         this.gameContainerElement.Head.NewGameBTN.AddOnClickListener( () => {this.OnReset()} );
     }
 
@@ -107,7 +142,6 @@ export default class Controller {
             this.OnClick(args);
         } );
     }
-
 
     private OnClick(args: OnCellClickArgs){
         if(args.type == CellClickTypes.leftClick){
@@ -185,7 +219,7 @@ export default class Controller {
         this.gameContainerElement.Head.LeftCounter.SetValue(args.bombsToDisarm);
     }
 
-    private OnGameTypeSubmit(args: OnSubmitArgs)
+    private OnGameTypeSubmit(args: OnGameTypeSubmitArgs)
     {
         if(args.gameType != GameTypeNames.custom)
         {
@@ -193,8 +227,8 @@ export default class Controller {
         }
         else{
             try{
-                const cs = (this.gameContainerElement.Menu.GetItemByName('Game').Item as GameOptionsTab).CustomValue;
-                this.gameType = new GameType(cs.width, cs.height, cs.bombs);
+                const cv = (this.gameContainerElement.Menu.GetItemByName('Game').Item as GameOptionsTab).CustomValue;
+                this.gameType = new GameType(cv.width, cv.height, cv.bombs);
             }
             catch{
                 this.OnWrongArgsSubmit();
@@ -206,6 +240,14 @@ export default class Controller {
         this.NewGame();
         this.PushGamePropsToStorage();
         this.gameContainerElement.Menu.GetItemByName('Game').Close();
+    }
+
+    private OnThemeTypeSubmit(args: OnThemeTypeSubmitArgs)
+    {
+        this.theme = args.theme
+        this.gameContainerElement.SetTheme(this.theme);
+        this.PushThemePropsToStorage();
+        this.gameContainerElement.Menu.GetItemByName('Options').Close();
     }
 
     private OnWrongArgsSubmit(){

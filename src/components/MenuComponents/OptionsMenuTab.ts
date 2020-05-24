@@ -1,5 +1,7 @@
 import IComponent from "../IComponent";
 import {GetLabeledElement} from './functions';
+import EventManager from "../../events/EventManager";
+import EventHandler from "../../events/EventHandler";
 
 const themes = [
     'normal_theme',
@@ -7,6 +9,10 @@ const themes = [
     'hight_contrast_theme',
     'end_city_theme'
 ];
+
+export interface OnSubmitArgs{
+    theme: string;
+}
 
 class ThemeList implements IComponent{
     private static curentID = 0;
@@ -24,6 +30,16 @@ class ThemeList implements IComponent{
         this.id = ThemeList.curentID++;
         this.InitializeRadioButtons();
         this.InitializeElement();
+    }
+
+    public Check(theme: string){
+        for(let i = 0; i < themes.length; i++){
+            if(themes[i] == theme){
+                this.radioButtnos[i].checked = true;
+                this.OnSelectionChange(i);
+                return;
+            }
+        }
     }
 
     private InitializeElement(){
@@ -65,10 +81,14 @@ class ThemeList implements IComponent{
 export default class OptionsMenuTab implements IComponent{
     private element: HTMLDivElement;
     private submitBTN: HTMLButtonElement;
+    private eventManager: EventManager;
 
     public themeList: ThemeList;
 
     public constructor(){
+        this.eventManager = new EventManager();
+        this.eventManager.AddEventHandler<OnSubmitArgs>("OnSubmit");
+
         this.themeList = new ThemeList();
         this.InitializeSubmitBTN();
         this.InitializeElement();
@@ -93,8 +113,14 @@ export default class OptionsMenuTab implements IComponent{
         this.submitBTN.addEventListener('click', () => { this.Submited(); })
     }
 
-    private Submited(){
+    public AddOnSubmitEventListener( func: (args: OnSubmitArgs) => void )
+    {
+        this.eventManager.GetEventHandler('OnSubmit').AddEventListener(func);
+    }
 
+    private Submited(){
+        const onSubmitEventHandler = this.eventManager.GetEventHandler('OnSubmit') as EventHandler<OnSubmitArgs>;
+        onSubmitEventHandler.ExecuteListeners({theme: this.themeList.Value});
     }
 
 

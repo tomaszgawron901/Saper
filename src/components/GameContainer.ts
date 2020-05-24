@@ -10,6 +10,8 @@ export default class GameContainer implements IComponent {
     private head: HeadContainer;
     private menu: Menu;
 
+    private theme: string;
+
     public get Board(): Board{
         return this.board;
     }
@@ -32,6 +34,15 @@ export default class GameContainer implements IComponent {
         this.InitializeElement();
     }
 
+    public SetTheme(theme: string){
+        if(this.theme == null){
+            this.element.classList.add(theme);
+        }else{
+            this.element.classList.replace(this.theme, theme);
+        }
+        this.theme = theme;
+    }
+
     private InitializeElement(){
         this.element = document.createElement('DIV') as HTMLDivElement;
 
@@ -50,6 +61,7 @@ export default class GameContainer implements IComponent {
 
         this.element.appendChild(this.menu.GetComponent());
         this.element.appendChild(mainContainer);
+        this.SetTheme('normal_theme');
     }
 
     private InitializeMenu(){

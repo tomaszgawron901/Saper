@@ -4,12 +4,9 @@ import EventHandler from "../../events/EventHandler";
 import {GameTypeNames} from '../../logic/gameTypes';
 import {GetLabeledElement} from './functions';
 
-
 export interface OnSubmitArgs{
     gameType: GameTypeNames;
 }
-
-
 
 class GameOptionsTable implements IComponent{
     private static curentID = 0;
@@ -98,7 +95,6 @@ class GameOptionsTable implements IComponent{
     }
 }
 
-
 export default class GameOptionsTab implements IComponent{
     private element: HTMLDivElement;
     private got: GameOptionsTable;
@@ -144,9 +140,7 @@ export default class GameOptionsTab implements IComponent{
         onSubmitEventHandler.ExecuteListeners({gameType: this.got.GameType});
     }
 
-
     public GetComponent(){
         return this.element;
     }
-
 }
