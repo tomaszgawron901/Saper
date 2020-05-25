@@ -8,12 +8,11 @@ const server = createServer((req: IncomingMessage, res: ServerResponse) => {
 
 const socket = new websocket.Server({server});
 socket.on('connection', function connection(ws) {
-  console.log('connected');
-  
-    ws.on('message', function incoming(message) {
-      console.log('received: %s', message);
-    });
-  
-    ws.send('something');
+
+  ws.on('message', function incoming(message) {
+    console.log('received: %s', message);
   });
+
+  ws.send('something');
+});
 server.listen(8080);
