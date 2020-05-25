@@ -1,5 +1,9 @@
+export interface ICustomerEventHandler<T>{
+  AddEventListener( func: (args?: T) => void): () => void;
+  RemoveListener(func: (args?: T) => void): void;
+}
 
-export default class EventHandler<T>{
+export default class EventHandler<T> implements ICustomerEventHandler<T>{
     private listeners: Array< (args?: T) => void >;
     public constructor() {
         this.listeners = new Array< (args?: T) => void >();
