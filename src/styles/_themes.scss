@@ -73,9 +73,9 @@
 
 .hight_contrast_theme{
     $color1: white;
-    $color2: rgb(196, 196, 196);
-    $color3: rgb(255, 255, 255);
-    $color4: rgb(73, 73, 73);
-    $color5: rgb(34, 34, 34);
+    $color2: rgb(175, 174, 174);
+    $color3: white;
+    $color4: rgb(56, 56, 56);
+    $color5: rgb(15, 15, 15);
     @include ITheme($color1, $color2, $color3, $color4, $color5);
 }

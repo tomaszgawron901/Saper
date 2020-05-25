@@ -3,7 +3,7 @@ import Board from './boardComponents/Board';
 import HeadContainer from './headComponents/HeadContainer';
 import Menu from './MenuComponents/menu';
 import GameOptionsTab from './MenuComponents/GameOptionsMenuTab';
-import OptionsMenuTab from './MenuComponents/OptionsMenuTab';
+import ThemeOptionsMenuTab from './MenuComponents/ThemeOptionsMenuTab';
 
 export default class GameContainer implements IComponent {
     private board: Board;
@@ -67,7 +67,7 @@ export default class GameContainer implements IComponent {
     private InitializeMenu(){
         this.menu = new Menu();
         this.menu.AddItem(0, "Game", new GameOptionsTab());
-        this.menu.AddItem(1, "Options", new OptionsMenuTab());
+        this.menu.AddItem(1, "Theme", new ThemeOptionsMenuTab());
     }
 
     private InitializeHead(){

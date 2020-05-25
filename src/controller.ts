@@ -7,7 +7,7 @@ import { CellClickTypes } from "./components/boardComponents/Cell";
 import { IGameType, BaseGameTypes, GameTypeNames, BaseGameTypeNames, GameType} from "./logic/gameTypes";
 import { LogMethod } from "./logDecorators";
 import { OnSubmitArgs as OnGameTypeSubmitArgs } from "./components/MenuComponents/GameOptionsMenuTab";
-import OptionsMenuTab, { OnSubmitArgs as OnThemeTypeSubmitArgs } from "./components/MenuComponents/OptionsMenuTab";
+import ThemeOptionsTab, { OnSubmitArgs as OnThemeTypeSubmitArgs } from "./components/MenuComponents/ThemeOptionsMenuTab";
 
 import LocalStorageManager from './localStorageManager';
 import GameOptionsTab from "./components/MenuComponents/GameOptionsMenuTab";
@@ -72,7 +72,7 @@ export default class Controller {
         this.InitializeGame();
         this.InitializeGameComponent();
         this.InitializeGameOptionsTab();
-        this.InitializeOptionsTab();
+        this.InitializeThemeOptionsTab();
 
     }
 
@@ -120,12 +120,12 @@ export default class Controller {
         gameOptionsTab.Check(this.gameTypeName);
     }
 
-    private InitializeOptionsTab(){
-        const optionsMenuTab = this.gameContainerElement.Menu.GetItemByName("Options").Item as OptionsMenuTab;
-        optionsMenuTab.AddOnSubmitEventListener( (args: OnThemeTypeSubmitArgs) => {
+    private InitializeThemeOptionsTab(){
+        const themeOptionsTab = this.gameContainerElement.Menu.GetItemByName("Theme").Item as ThemeOptionsTab;
+        themeOptionsTab.AddOnSubmitEventListener( (args: OnThemeTypeSubmitArgs) => {
             this.OnThemeTypeSubmit(args);
         } );
-        optionsMenuTab.themeList.Check(this.theme);
+        themeOptionsTab.themeList.Check(this.theme);
     }
 
     private InitializeGameComponent(){
@@ -247,7 +247,7 @@ export default class Controller {
         this.theme = args.theme
         this.gameContainerElement.SetTheme(this.theme);
         this.PushThemePropsToStorage();
-        this.gameContainerElement.Menu.GetItemByName('Options').Close();
+        this.gameContainerElement.Menu.GetItemByName('Theme').Close();
     }
 
     private OnWrongArgsSubmit(){

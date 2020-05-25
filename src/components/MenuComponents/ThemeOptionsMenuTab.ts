@@ -78,7 +78,7 @@ class ThemeList implements IComponent{
 }
 
 
-export default class OptionsMenuTab implements IComponent{
+export default class ThemeOptionsMenuTab implements IComponent{
     private element: HTMLDivElement;
     private submitBTN: HTMLButtonElement;
     private eventManager: EventManager;
