@@ -54,11 +54,11 @@
 }
 
 .dark_theme{
-    $color1: darken(white, 20%) ;
-    $color2: darken(rgb(196, 196, 196), 20%);
-    $color3: darken(rgb(184, 184, 184), 20%);
-    $color4: darken(rgb(110, 110, 110), 20%);
-    $color5: darken(rgb(85, 85, 85), 20%);
+    $color1: darken(white, 25) ;
+    $color2: darken(rgb(196, 196, 196), 25);
+    $color3: rgb(51, 51, 51);
+    $color4: darken(rgb(110, 110, 110), 25);
+    $color5: darken(rgb(85, 85, 85), 25);
     @include ITheme($color1, $color2, $color3, $color4, $color5);
 }
 
@@ -73,9 +73,9 @@
 
 .hight_contrast_theme{
     $color1: white;
-    $color2: rgb(175, 174, 174);
+    $color2: rgb(148, 148, 148);
     $color3: white;
-    $color4: rgb(56, 56, 56);
+    $color4: rgb(46, 46, 46);
     $color5: rgb(15, 15, 15);
     @include ITheme($color1, $color2, $color3, $color4, $color5);
 }
