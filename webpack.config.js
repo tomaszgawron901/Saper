@@ -51,9 +51,10 @@ const config = {
 };
 
 const serverConfig = {
+  mode: 'development',
   devtool: 'source-map',
   entry: {
-    'server': './src/server.ts'
+    'server': './src/serverThings/server.ts'
   },
   target: 'node',
   module: {

@@ -3,6 +3,7 @@ import EventHandler from '../events/EventHandler';
 import Position from './Position';
 import Cell from './Cell';
 import Timer, { ITimerChangeHandler } from './timer';
+import { GameTypeNames, BaseGameTypes, BaseGameTypeNames } from './gameTypes';
 
 export interface OnCellChangeArgs{
     index: number;
@@ -10,6 +11,7 @@ export interface OnCellChangeArgs{
 }
 
 export interface OnWinArgs{
+    gameType: GameTypeNames;
     time: number;
 }
 
@@ -64,24 +66,22 @@ function PullRandom<T>( array: T[], quantity: number ){
     return randomArray;
 }
 
-
-
-export default class Game{
-    private size: {width: number, height: number};
-    private cellsToOpen: number;
-    private bombsToDisarm: number;
-    private numberOfBombs: number;
-    private firstClick: boolean;
-    private eventManager: EventManager;
-    private inProgress: boolean;
-    private timer: Timer;
-    private board: Cell[];
+class Game{
+    protected size: {width: number, height: number};
+    protected cellsToOpen: number;
+    protected bombsToDisarm: number;
+    protected numberOfBombs: number;
+    protected firstClick: boolean;
+    protected eventManager: EventManager;
+    protected inProgress: boolean;
+    protected timer: Timer;
+    protected board: Cell[];
 
     public get Timer(){
         return this.timer as ITimerChangeHandler;
     }
 
-    private set BombsToDisarm(value: number) {
+    protected set BombsToDisarm(value: number) {
         if(this.bombsToDisarm == value){
             return;
         }
@@ -103,7 +103,7 @@ export default class Game{
         this.CreateBoard();
     }
 
-    private InitializeEvents(){
+    protected InitializeEvents(){
         this.eventManager = new EventManager();
         this.eventManager.AddEventHandler<OnCellChangeArgs>(GameEvents.cellChange);
         this.eventManager.AddEventHandler<OnDefeatArgs>(GameEvents.defeat);
@@ -111,7 +111,7 @@ export default class Game{
         this.eventManager.AddEventHandler<OnBombsToDisarmChangedArgs>(GameEvents.bombsToDisarmChanged);
     }
 
-    private CreateBoard(){
+    protected CreateBoard(){
         const arrayLenght = this.size.width*this.size.height;
         this.board = new Array<Cell>();
 
@@ -125,11 +125,11 @@ export default class Game{
         return this.eventManager.GetEventHandler(event);
     }
 
-    private BoardIndexOf(position: Position){
+    protected BoardIndexOf(position: Position){
         return position.x+position.y*this.size.width;
     }
 
-    private BoardPositionOf(index: number){
+    protected BoardPositionOf(index: number){
         if(index >= this.board.length){
             throw new Error("Index out of range.");
         }
@@ -138,11 +138,11 @@ export default class Game{
         return new Position(x, y);
     }
 
-    private IsInsside(position: Position){
+    protected IsInsside(position: Position){
         return position.x >= 0 && position.x < this.size.width && position.y >= 0 && position.y < this.size.height;
     }
 
-    private GetMatrix(position: Position){
+    protected GetMatrix(position: Position){
         const output = new Array<Position>();
         for(var i = position.x-1; i <= position.x +1; i++)
         {
@@ -157,7 +157,7 @@ export default class Game{
         return output;
     }
 
-    private GetNeighborPositions(position: Position){
+    protected GetNeighborPositions(position: Position){
         return this.GetMatrix(position).filter(pos => !pos.Equals(position));
     }
 
@@ -195,30 +195,30 @@ export default class Game{
         this.CellChanged(position);
     }
 
-    private OnFirstClick(position: Position){
+    protected OnFirstClick(position: Position){
         this.GenerateMap(position);
         this.timer.Start();
         this.firstClick = false;
     }
 
-    private OnGameLose(position: Position){
+    protected OnGameLose(position: Position){
         this.OnGameEnd();
         this.DetonateAll();
         this.GameLost(position);
     }
 
-    private OnGameWin(){
+    protected OnGameWin(){
         this.OnGameEnd();
         this.MarkAll();
         this.GameWon();
     }
 
-    private OnGameEnd(){
+    protected OnGameEnd(){
         this.inProgress = false;
         this.timer.Stop();
     }
 
-    private CellChanged(position: Position | number){
+    protected CellChanged(position: Position | number){
         let index;
         if(position instanceof Position)
         { 
@@ -233,26 +233,26 @@ export default class Game{
         OpenEventHandler.ExecuteListeners(args);
     }
 
-    private GameLost(position: Position)
+    protected GameLost(position: Position)
     {
         const DefeatEventHandler = this.eventManager.GetEventHandler(GameEvents.defeat) as EventHandler<OnDefeatArgs>;
         const args: OnDefeatArgs = {lastOpenedIndex: this.BoardIndexOf(position)};
         DefeatEventHandler.ExecuteListeners(args);
     }
 
-    private GameWon(){
+    protected GameWon(){
         const WinEventHandler = this.eventManager.GetEventHandler(GameEvents.win) as EventHandler<OnWinArgs>;
-        const args: OnWinArgs = { time: Date.now() - this.timer.TimerStart };
+        const args: OnWinArgs = {gameType: GameTypeNames.custom ,time: Date.now() - this.timer.TimerStart };
         WinEventHandler.ExecuteListeners(args);
     }
 
-    private BombsToDisarmChanged(){
+    protected BombsToDisarmChanged(){
         const BombsToDisarmEventHandler = this.eventManager.GetEventHandler(GameEvents.bombsToDisarmChanged) as EventHandler<OnBombsToDisarmChangedArgs>;
         const args: OnBombsToDisarmChangedArgs = { bombsToDisarm: this.bombsToDisarm };
         BombsToDisarmEventHandler.ExecuteListeners(args);
     }
 
-    private DetonateAll()
+    protected DetonateAll()
     {
         const lenght = this.size.width*this.size.height
         for(let index = 0; index < lenght; index++)
@@ -266,7 +266,7 @@ export default class Game{
         }
     }
 
-    private MarkAll(){
+    protected MarkAll(){
         const lenght = this.size.width*this.size.height
         for(let index = 0; index < lenght; index++)
         {
@@ -279,7 +279,7 @@ export default class Game{
         }
     }
 
-    private CascadeOpen(position: Position){
+    protected CascadeOpen(position: Position){
 
         this.OpenCell(position);
 
@@ -296,7 +296,7 @@ export default class Game{
 
     }
 
-    private OpenCell(position: Position)
+    protected OpenCell(position: Position)
     {
         const cell = this.board[this.BoardIndexOf(position)];
         cell.isOpened = true;
@@ -307,13 +307,13 @@ export default class Game{
         }
     }
 
-    private GenerateMap(firstClickPosition: Position){
+    protected GenerateMap(firstClickPosition: Position){
         const excludedIndexes = this.GetMatrix(firstClickPosition).map(position => this.BoardIndexOf(position) )
         const availableIndexes = GetRange(0, this.board.length, 1, excludedIndexes)
         this.PlaceBombs(availableIndexes);
     }
 
-    private PlaceBombs(availableIndexes: Array<number>){
+    protected PlaceBombs(availableIndexes: Array<number>){
         const positions = PullRandom<number>(availableIndexes, this.numberOfBombs).map(index => this.BoardPositionOf(index));
         positions.forEach(position => {
             this.SetBombAt(position);
@@ -321,7 +321,7 @@ export default class Game{
 
     }
 
-    private SetBombAt(position: Position)
+    protected SetBombAt(position: Position)
     {
         const index = this.BoardIndexOf(position);
         if(this.board[index].isBomb){
@@ -339,3 +339,44 @@ export default class Game{
         this.timer.Stop();
     }
 }
+
+class BeginerGame extends Game{
+    public constructor(){
+        const gameType = BaseGameTypes[BaseGameTypeNames.beginner];
+        super({width: gameType.width, height: gameType.height}, gameType.bombs);
+    }
+
+    protected GameWon(){
+        const WinEventHandler = this.eventManager.GetEventHandler(GameEvents.win) as EventHandler<OnWinArgs>;
+        const args: OnWinArgs = {gameType: GameTypeNames.beginner ,time: Date.now() - this.timer.TimerStart };
+        WinEventHandler.ExecuteListeners(args);
+    }
+}
+
+class IntermediateGame extends Game{
+    public constructor(){
+        const gameType = BaseGameTypes[BaseGameTypeNames.intermediate];
+        super({width: gameType.width, height: gameType.height}, gameType.bombs);
+    }
+
+    protected GameWon(){
+        const WinEventHandler = this.eventManager.GetEventHandler(GameEvents.win) as EventHandler<OnWinArgs>;
+        const args: OnWinArgs = {gameType: GameTypeNames.intermediate ,time: Date.now() - this.timer.TimerStart };
+        WinEventHandler.ExecuteListeners(args);
+    }
+}
+
+class ExpertGame extends Game{
+    public constructor(){
+        const gameType = BaseGameTypes[BaseGameTypeNames.expert];
+        super({width: gameType.width, height: gameType.height}, gameType.bombs);
+    }
+
+    protected GameWon(){
+        const WinEventHandler = this.eventManager.GetEventHandler(GameEvents.win) as EventHandler<OnWinArgs>;
+        const args: OnWinArgs = {gameType: GameTypeNames.expert ,time: Date.now() - this.timer.TimerStart };
+        WinEventHandler.ExecuteListeners(args);
+    }
+}
+
+export {Game, BeginerGame, IntermediateGame, ExpertGame};

@@ -3,15 +3,13 @@ import './styles/gameBoard.scss';
 import './styles/head.scss';
 import './styles/menu.scss';
 import preLoadImages, {PreLoad} from './images/preLoad';
-import Client from './client';
 
 import Controller from './controller';
 
-const client = new Client("Tomek");
-client.OnOpenEventHandler.AddEventListener(() => { console.log("client connected"); });
-client.Connect();
-
-
+enum aa{
+    a = 1,
+    b = 2
+}
 
 PreLoad();
 const controller = new Controller();

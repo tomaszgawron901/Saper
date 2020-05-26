@@ -1,27 +1,32 @@
 import GameContainer from "./components/GameContainer";
-import Game, {GameEvents, OnCellChangeArgs, OnDefeatArgs, OnWinArgs, OnBombsToDisarmChangedArgs} from "./logic/Game";
+import {GameEvents, OnCellChangeArgs, OnDefeatArgs, OnWinArgs, OnBombsToDisarmChangedArgs, Game, BeginerGame, IntermediateGame, ExpertGame} from "./logic/Game";
 import {OnCellClickArgs} from './components/boardComponents/Board';
 import Position from "./logic/Position";
 import EventHandler from "./events/EventHandler";
 import { CellClickTypes } from "./components/boardComponents/Cell";
 import { IGameType, BaseGameTypes, GameTypeNames, BaseGameTypeNames, GameType} from "./logic/gameTypes";
-import { LogMethod } from "./logDecorators";
 import { OnSubmitArgs as OnGameTypeSubmitArgs } from "./components/MenuComponents/GameOptionsMenuTab";
 import ThemeOptionsTab, { OnSubmitArgs as OnThemeTypeSubmitArgs } from "./components/MenuComponents/ThemeOptionsMenuTab";
 
 import LocalStorageManager from './localStorageManager';
 import GameOptionsTab from "./components/MenuComponents/GameOptionsMenuTab";
+import Client from "./client";
+import { LogMethod } from "./logDecorators";
 
 export default class Controller { 
     public gameContainerElement: GameContainer;
     public game: Game;
 
+
+    private client: Client;
     private gameType: IGameType;
     private gameTypeName: GameTypeNames;
 
     private theme: string;
 
     public constructor(){
+        this.client = new Client();
+        this.client.Connect();
         this.PullGamePropsFromStorage();
         this.PullThemePropsFromStorage();
         this.InitializeController();
@@ -86,7 +91,24 @@ export default class Controller {
         if(this.game != null){
             this.game.Dispatch();
         }
-        this.game = new Game({width: this.gameType.width,height: this.gameType.height}, this.gameType.bombs);
+
+        switch(this.gameTypeName){
+            case GameTypeNames.beginner:
+                this.game = new BeginerGame();
+                break;
+            case GameTypeNames.intermediate:
+                this.game = new IntermediateGame();
+                break;
+            case GameTypeNames.expert:
+                this.game = new ExpertGame();
+                break;
+            case GameTypeNames.custom:
+                this.game = new Game({width: this.gameType.width,height: this.gameType.height}, this.gameType.bombs);
+                break;
+            default:
+                this.game = new BeginerGame();
+                break;
+        }
         (this.game.GetEventHandler(GameEvents.cellChange) as EventHandler<OnCellChangeArgs>).AddEventListener( (args: OnCellChangeArgs) => {
             this.OnCellChange(args);
         });
@@ -209,10 +231,13 @@ export default class Controller {
         this.gameContainerElement.Board.cells[args.lastOpenedIndex].SetBackgroundColor("red");
     }
 
+    @LogMethod
     private OnGameWin(args: OnWinArgs)
     {
         this.gameContainerElement.Head.NewGameBTN.SetImage("images/e4.png");
-        
+        if(args.gameType != GameTypeNames.custom && this.client.IsOpened){
+            this.client.Send(args.gameType as unknown as BaseGameTypeNames, args.time);
+        }
     }
 
     private OnBombsToDisarmChange(args: OnBombsToDisarmChangedArgs){

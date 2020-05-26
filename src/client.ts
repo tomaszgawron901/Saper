@@ -1,20 +1,23 @@
 import { BaseGameTypeNames} from "./logic/gameTypes";
 import EventHandler, { ICustomerEventHandler } from "./events/EventHandler";
+import { LogMethod } from "./logDecorators";
 
-
-interface MessageArgs{
+export interface MessageArgs{
   nick: string;
   gameType: BaseGameTypeNames;
   time: number;
 }
 
-interface RankingArgs{
+export interface RankingArgs{
   gameType: BaseGameTypeNames;
   values: {nick: string, time: number}[]
 }
 
 export default class Client{
-  public static readonly url = "ws://localhost:8080";
+  private url: string;
+  public get URL(){
+    return this.url;
+  }
 
   private socket: WebSocket;
   private nick: string;
@@ -54,8 +57,9 @@ export default class Client{
     
   }
 
-  public Connect(){
-    this.socket = new WebSocket(Client.url);
+  public Connect(url = "ws://localhost:8080"){
+    this.url = url;
+    this.socket = new WebSocket(this.url);
     this.socket.onopen = () => {
       this.InitializeSocket();
       this.Opened();
@@ -79,6 +83,7 @@ export default class Client{
     this.socket.send(message);
   }
 
+  @LogMethod
   private Received(data: string){
     try{
       const rankingArgs = JSON.parse(data) as RankingArgs;

@@ -40,7 +40,7 @@ class GameType implements IGameType{
 const BaseGameTypes: {[index in BaseGameTypeNames]: GameType} = {
     [BaseGameTypeNames.beginner]: new GameType(8, 8, 10),
     [BaseGameTypeNames.intermediate]: new GameType(16, 16, 40),
-    [BaseGameTypeNames.expert]: new GameType(30, 16, 99)
+    [BaseGameTypeNames.expert]: new GameType(32, 16, 99)
 }
 
 export {IGameType, GameType, BaseGameTypes, GameTypeNames, BaseGameTypeNames};
