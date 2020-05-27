@@ -11,11 +11,14 @@ import ThemeOptionsTab, { OnSubmitArgs as OnThemeTypeSubmitArgs } from "./compon
 import LocalStorageManager from './localStorageManager';
 import GameOptionsTab from "./components/MenuComponents/GameOptionsMenuTab";
 import Client from "./client";
-import { LogMethod } from "./logDecorators";
+import { LogMethod, logProperty } from "./logDecorators";
+import RankingContainer from "./components/rankingComponents/RankingContainer";
+import { IMessage, IRanking, MessageTypes } from "./serverThings/serverRequirements";
 
 export default class Controller { 
     public gameContainerElement: GameContainer;
     public game: Game;
+    public readonly ranking: RankingContainer;
 
 
     private client: Client;
@@ -25,11 +28,33 @@ export default class Controller {
     private theme: string;
 
     public constructor(){
-        this.client = new Client();
-        this.client.Connect();
+        this.ranking = new RankingContainer();
+        this.InitializeClient();
         this.PullGamePropsFromStorage();
         this.PullThemePropsFromStorage();
         this.InitializeController();
+    }
+
+    private InitializeClient(){
+        this.client = new Client();
+        this.client.Connect();
+        this.client.OnReceiveEventHandler.AddEventListener((args: IMessage) => {
+            switch(args.type){
+                case "rankingChanged":
+                    console.log(args.data);
+                    
+                    this.ranking.Set(args.data as IRanking);
+                    break;
+                case "rankingRequest":
+                    (args.data as IRanking[]).forEach(iranking => {
+                        this.ranking.Set(iranking);
+                    });
+            }
+        });
+
+        this.client.OnOpenEventHandler.AddEventListener( () => {
+            this.client.SendRankingRequest();
+        });
     }
 
     private PushGamePropsToStorage(){

@@ -9,3 +9,4 @@ import Controller from './controller';
 PreLoad();
 const controller = new Controller();
 document.body.appendChild(controller.gameContainerElement.GetComponent());
+document.body.appendChild(controller.ranking.GetComponent());

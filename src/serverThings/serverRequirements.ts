@@ -7,7 +7,8 @@ function GetSimpleRanking(ranking: IRanking){
 
 enum MessageTypes{
     rankingRequest = "rankingRequest",
-    scoreAndGameType = "scoreAndGameType"
+    scoreAndGameType = "scoreAndGameType",
+    rankingChanged = "rankingChanged"
   }
   
   interface IMessage{

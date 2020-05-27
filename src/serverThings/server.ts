@@ -28,7 +28,7 @@ const OnMessageReceive = (ws: websocket, data: websocket.Data) => {
 
 const OnRankingRequest = (ws: websocket) => {
   const message: IMessage = {type: MessageTypes.rankingRequest, data: rankingManager.Simplify()};
-  ws.send(message); 
+  ws.send(JSON.stringify(message)); 
 }
 
 const OnScoreReceived = (score: IScoreAndGameType) => {
@@ -42,9 +42,10 @@ const server = createServer((req: IncomingMessage, res: ServerResponse) => {
 
 const socket = new websocket.Server({server});
 rankingManager.OnChangeEventHandler.AddEventListener((args: OnRankingChangeArgs) => {
+  const simpleRanking = GetSimpleRanking(args.ranking);
+  const message: IMessage = {type: MessageTypes.rankingChanged, data: simpleRanking};
   socket.clients.forEach(client => {
-    const simpleRanking = GetSimpleRanking(args.ranking);
-    client.send(JSON.stringify(simpleRanking));
+    client.send(JSON.stringify(message));
   });
 });
 
