@@ -1,17 +1,8 @@
-import { BaseGameTypeNames} from "./logic/gameTypes";
+import { BaseGameTypeNames, GameTypeNames} from "./logic/gameTypes";
 import EventHandler, { ICustomerEventHandler } from "./events/EventHandler";
 import { LogMethod } from "./logDecorators";
+import {IScoreAndGameType, IMessage, MessageTypes, IRanking} from './serverThings/serverRequirements';
 
-export interface MessageArgs{
-  nick: string;
-  gameType: BaseGameTypeNames;
-  time: number;
-}
-
-export interface RankingArgs{
-  gameType: BaseGameTypeNames;
-  values: {nick: string, time: number}[]
-}
 
 export default class Client{
   private url: string;
@@ -35,14 +26,14 @@ export default class Client{
   }
 
   private onOpenEventHandler: EventHandler<null>;
-  private onReceiveEventHandler: EventHandler<RankingArgs>;
+  private onReceiveEventHandler: EventHandler<IMessage>;
   private onErrorEventHandler: EventHandler<{e: Event}>;
 
   public get OnOpenEventHandler(): ICustomerEventHandler<null>{
     return this.onOpenEventHandler;
   }
 
-  public get OnReceiveEventHandler(): ICustomerEventHandler<RankingArgs>{
+  public get OnReceiveEventHandler(): ICustomerEventHandler<IMessage>{
     return this.onReceiveEventHandler;
   }
 
@@ -68,7 +59,7 @@ export default class Client{
 
   private InitializeEventHandlers(){
     this.onOpenEventHandler = new EventHandler<null>();
-    this.onReceiveEventHandler = new EventHandler<RankingArgs>();
+    this.onReceiveEventHandler = new EventHandler<IMessage>();
     this.onErrorEventHandler = new EventHandler<{e: Event}>();
   }
 
@@ -77,22 +68,30 @@ export default class Client{
     this.socket.onerror = (event: Event) => {this.Error(event)};
   }
 
-  public Send(gameType: BaseGameTypeNames, time: number) {
-    const args: MessageArgs = {nick: this.Nick, gameType, time};
-    const message = JSON.stringify(args);
-    this.socket.send(message);
+  public Send(message: IMessage) {
+    this.socket.send(JSON.stringify(message));
+  }
+
+  public SendRankingRequest(){
+    const message: IMessage = {type: MessageTypes.rankingRequest, data: null};
+    this.socket.send(JSON.stringify(message));
+  }
+
+  public SendScoreAndGameType(time: number, gameType: BaseGameTypeNames){
+    const ScoreAndGameType: IScoreAndGameType = {nick: this.nick, time, gameType};
+    const message: IMessage = {type: MessageTypes.scoreAndGameType, data: ScoreAndGameType};
+    this.socket.send(JSON.stringify(message));
   }
 
   @LogMethod
   private Received(data: string){
     try{
-      const rankingArgs = JSON.parse(data) as RankingArgs;
-      this.onReceiveEventHandler.ExecuteListeners(rankingArgs);
+      const message = JSON.parse(data) as IMessage;
+      this.onReceiveEventHandler.ExecuteListeners(message);
     }
     catch{
       this.Error(new Event("Data parse error."));
     }
-
   }
 
   private Opened(){

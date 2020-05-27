@@ -1,53 +1,93 @@
 import { BaseGameTypeNames } from "../logic/gameTypes";
 import EventHandler, { ICustomerEventHandler } from "../events/EventHandler";
+import rankingStorage from "./rankingStorage";
 
-interface IGameScore{
+interface IScoreAndGameType{
     nick: string;
     gameType: BaseGameTypeNames;
     time: number;
 }
 
-class Ranking{
+interface IScore{
+    nick: string,
+    time: number
+}
+
+interface IRanking{
+    gameTypeName: BaseGameTypeNames,
+    array: Array<IScore>
+}
+
+interface OnRankingChangeArgs{
+    ranking: IRanking;
+}
+class Ranking implements IRanking{
+    public static Parse(str: string): Ranking{
+        let parsedIRanking: IRanking;
+        try{
+            parsedIRanking = JSON.parse(str) as IRanking;
+        }
+        catch{
+            throw new Error("Unable to parse.");
+        }
+        return Ranking.ParseIRanking(parsedIRanking);
+    }
+
+    public static ParseIRanking(ranking: IRanking){
+        const newRanking = new Ranking(ranking.gameTypeName);
+        ranking.array.forEach(score => {
+            newRanking.Add(score);
+        });
+        return newRanking;
+    }
+
     public readonly maxLenght: number;
 
     private index: number;
-    public readonly array: Array<IGameScore>;
+    public readonly array: Array<IScore>;
     public readonly gameTypeName: BaseGameTypeNames;
     private readonly onChangeEventChandler: EventHandler<null>;
     public get OnChangeEventChandler(){
         return this.onChangeEventChandler as ICustomerEventHandler<null>;
     }
 
-    public constructor(lenght: number, gameTypeName: BaseGameTypeNames){
-        if( lenght <= 0 ) { throw new Error("lenght Argument Error."); }
-        this.maxLenght = lenght;
+    public constructor(gameTypeName: BaseGameTypeNames){
+        this.maxLenght = 5;
         this.gameTypeName = gameTypeName;
-        this.array = new Array<IGameScore>(lenght);
+        this.array = new Array<IScore>();
         this.onChangeEventChandler = new EventHandler<null>();
         this.index = 0;
     }
 
-    public Add(element: IGameScore)
+    public Add(element: IScoreAndGameType | IScore)
     {
-        if(element.gameType != this.gameTypeName){
+        if( (element as IScoreAndGameType).gameType != null && (element as IScoreAndGameType).gameType != this.gameTypeName){
             throw new Error("Wrong element gameTypeName.");
         }
-        const lastIndex = this.maxLenght - 1;
-        if(this.index < lastIndex)
+        const score: IScore = {nick: element.nick, time: element.time};
+        if(this.index < this.maxLenght)
         {
-            this.array[this.index] = element;
+            this.array[this.index] = score;
             this.index += 1;
         }
-        else if(this.index == lastIndex && this.array[this.index] > element)
+        else if(this.index == this.maxLenght)
         {
-                this.array[this.index] = element;
+            const lastIndex = this.maxLenght-1;
+            if(this.array[lastIndex].time > score.time)
+            {
+                this.array[lastIndex] = score;
+            }
         }
         else
         {
             return;
         }
-        this.array.sort();
+        this.array.sort( (a, b) => a.time - b.time );
         this.Changed();
+    }
+
+    public Simplyfy(): IRanking{
+        return {gameTypeName: this.gameTypeName, array: this.array};
     }
 
     private Changed(){
@@ -56,31 +96,48 @@ class Ranking{
 }
 
 class RankingManager{
-    public readonly rankings: Ranking[];
-    private rankingLenght: number;
-    private readonly onChangeEventHandler: EventHandler<null>;
+    private rankings: Ranking[];
+    public get Rankings(){
+        return this.rankings
+    }
+
+    private readonly onChangeEventHandler: EventHandler<OnRankingChangeArgs>;
     public get OnChangeEventHandler(){
-        return this.onChangeEventHandler as ICustomerEventHandler<null>;
+        return this.onChangeEventHandler as ICustomerEventHandler<OnRankingChangeArgs>;
     }
 
-    public constructor(lenght = 5)
+    public constructor()
     {
-        this.onChangeEventHandler = new EventHandler<null>();
-        this.rankingLenght = lenght;
+        this.onChangeEventHandler = new EventHandler<OnRankingChangeArgs>();
         this.rankings = new Array<Ranking>();
-        this.InitializeRanking();
+        this.InitializeRankings();
     }
 
-    private InitializeRanking(){
+    public InitializeRankings(){
         for(let i = 0; i < 3; i++){
-            this.rankings[i] = new Ranking(this.rankingLenght, i);
-            this.rankings[i].OnChangeEventChandler.AddEventListener(() => {this.Changed();});
+            // let ranking = rankingStorage.GetRanking(i);
+            // if(ranking == null)
+            // {
+            //     ranking = new Ranking(i);
+            // }
+            const ranking = new Ranking(i);
+            this.rankings[i] = ranking;
+            this.rankings[i].OnChangeEventChandler.AddEventListener(() => {this.Changed( this.rankings[i]); });
         }
     }
 
-    private Changed(){
-        this.onChangeEventHandler.ExecuteListeners();
+    private Changed(ranking: Ranking){
+        this.onChangeEventHandler.ExecuteListeners( {ranking: ranking} );
+        //rankingStorage.PushRanking(ranking);
+    }
+
+    public Simplify(){
+        const array = new Array<IRanking>();
+        this.rankings.forEach(ranking => {
+            array.push(ranking.Simplyfy());
+        });
+        return array;
     }
 }
 
-export {Ranking, RankingManager, IGameScore};
+export {Ranking, IRanking, RankingManager, IScore, IScoreAndGameType, OnRankingChangeArgs};

@@ -236,7 +236,7 @@ export default class Controller {
     {
         this.gameContainerElement.Head.NewGameBTN.SetImage("images/e4.png");
         if(args.gameType != GameTypeNames.custom && this.client.IsOpened){
-            this.client.Send(args.gameType as unknown as BaseGameTypeNames, args.time);
+            this.client.SendScoreAndGameType(args.time, args.gameType as unknown as BaseGameTypeNames);
         }
     }
 
