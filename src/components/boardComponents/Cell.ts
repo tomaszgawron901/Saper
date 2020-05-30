@@ -17,7 +17,6 @@ export default class Cell extends Clickable<OnCellClickArgs> implements ICompone
         this.element = document.createElement('DIV');
         this.element.classList.add("BorderedContainer");
         
-        //this.element.classList.add('Clickable');
         this.element.classList.add("CellInterior");
         this.element.classList.add("CellEnabled");
         this.SetBackgroundColor();

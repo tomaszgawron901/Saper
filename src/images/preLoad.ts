@@ -76,38 +76,33 @@ e3.src = 'images/e3.png';
 const e4 = new Image(32, 32);
 e4.src = 'images/e4.png';
 
-let Images: any;
-
-export function PreLoad(){
-    Images = {
-        'bomb': bomb.src,
-        'flag': flag.src,
-        'notBomb': notbomb.src,
-        'o1': o1.src,
-        'o2': o2.src,
-        'o3': o3.src,
-        'o4': o4.src,
-        'o5': o5.src,
-        'o6': o6.src,
-        'o7': o7.src,
-        'o8': o8.src,
-        'c0': c0.src,
-        'c1': c1.src,
-        'c2': c2.src,
-        'c3': c3.src,
-        'c4': c4.src,
-        'c5': c5.src,
-        'c6': c6.src,
-        'c7': c7.src,
-        'c8': c8.src,
-        'c9': c9.src,
-        'c-': c_.src,
-        'e1': e1.src,
-        'e2': e2.src,
-        'e3': e3.src,
-        'e4': e4.src
-    }
-    
-}
+const Images: {[index: string]: HTMLImageElement} = {
+    ['bomb']: bomb,
+    ['flag']: flag,
+    ['notBomb']: notbomb,
+    ['o1']: o1,
+    ['o2']: o2,
+    ['o3']: o3,
+    ['o4']: o4,
+    ['o5']: o5,
+    ['o6']: o6,
+    ['o7']: o7,
+    ['o8']: o8,
+    ['c0']: c0,
+    ['c1']: c1,
+    ['c2']: c2,
+    ['c3']: c3,
+    ['c4']: c4,
+    ['c5']: c5,
+    ['c6']: c6,
+    ['c7']: c7,
+    ['c8']: c8,
+    ['c9']: c9,
+    ['c-']: c_,
+    ['e1']: e1,
+    ['e2']: e2,
+    ['e3']: e3,
+    ['e4']: e4
+};
 
 export default Images;

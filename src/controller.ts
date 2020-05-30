@@ -14,6 +14,8 @@ import Client from "./client";
 import { LogMethod, logProperty } from "./logDecorators";
 import RankingContainer from "./components/rankingComponents/RankingContainer";
 import { IMessage, IRanking, MessageTypes } from "./serverThings/serverRequirements";
+import Images from './images/preLoad';
+
 
 export default class Controller { 
     public gameContainerElement: GameContainer;
@@ -107,7 +109,7 @@ export default class Controller {
     }
 
     public NewGame(){
-        this.gameContainerElement.Head.NewGameBTN.SetImage("images/e1.png");
+        this.gameContainerElement.Head.NewGameBTN.SetImage(Images['e1'].src);
         this.UpdateGameComponentSize();
         this.InitializeGame();
     }
@@ -215,23 +217,23 @@ export default class Controller {
         {
             if(args.cell.isOpened && !args.cell.isBomb)
             {
-                imgPath = "images/notbomba.png";
+                imgPath = Images['notBomb'].src;
             }
             else
             {
-                imgPath = "images/flag.png";
+                imgPath = Images['flag'].src;
             }
         }
         else if(args.cell.isOpened)
         {
             if(args.cell.isBomb)
             {
-                imgPath = "images/bomba.png";
+                imgPath = Images['bomb'].src;
             }else
             {
                 if(args.cell.neighborBombs != 0)
                 {
-                    imgPath = "images/o"+ args.cell.neighborBombs.toString() +".png";
+                    imgPath = Images["o" + args.cell.neighborBombs.toString()].src;
                 }
             }
         }
@@ -244,7 +246,7 @@ export default class Controller {
     }
 
     private OnReset(){
-        this.gameContainerElement.Head.NewGameBTN.SetImage("images/e1.png");
+        this.gameContainerElement.Head.NewGameBTN.SetImage(Images['e1'].src);
         this.gameContainerElement.Reset();
         this.gameContainerElement.Head.LeftCounter.SetValue(this.gameType.bombs);
         this.InitializeGame();
@@ -252,14 +254,14 @@ export default class Controller {
 
     private OnGameLose(args: OnDefeatArgs)
     {
-        this.gameContainerElement.Head.NewGameBTN.SetImage("images/e3.png");
+        this.gameContainerElement.Head.NewGameBTN.SetImage(Images['e3'].src);
         this.gameContainerElement.Board.cells[args.lastOpenedIndex].SetBackgroundColor("red");
     }
 
     @LogMethod
     private OnGameWin(args: OnWinArgs)
     {
-        this.gameContainerElement.Head.NewGameBTN.SetImage("images/e4.png");
+        this.gameContainerElement.Head.NewGameBTN.SetImage(Images['e4'].src);
         if(args.gameType != GameTypeNames.custom && this.client.IsOpened){
             this.client.SendScoreAndGameType(args.time, args.gameType as unknown as BaseGameTypeNames);
         }

@@ -1,6 +1,6 @@
 import Clickable from "../Clickable";
 import IComponent from "../IComponent";
-
+import Images from '../../images/preLoad';
 
 export interface OnNewGameBTNClickArgs{
 
@@ -18,7 +18,7 @@ export default class NewGameBTN extends Clickable<OnNewGameBTNClickArgs> impleme
         this.element.classList.add('Clickable');
         this.element.classList.add('CellEnabled');
 
-        this.SetImage('images/e1.png');
+        this.SetImage(Images['e1'].src);
         this.element.addEventListener('click', () => {this.Clicked();});
     }
 
