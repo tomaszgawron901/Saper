@@ -4,6 +4,7 @@ import HeadContainer from './headComponents/HeadContainer';
 import Menu from './MenuComponents/menu';
 import GameOptionsTab from './MenuComponents/GameOptionsMenuTab';
 import ThemeOptionsMenuTab from './MenuComponents/ThemeOptionsMenuTab';
+import RankingOprionsMenuTab from './MenuComponents/RankingOprionsMenuTab';
 
 export default class GameContainer implements IComponent {
     private board: Board;
@@ -68,6 +69,7 @@ export default class GameContainer implements IComponent {
         this.menu = new Menu();
         this.menu.AddItem(0, "Game", new GameOptionsTab());
         this.menu.AddItem(1, "Theme", new ThemeOptionsMenuTab());
+        this.menu.AddItem(2, "Ranking", new RankingOprionsMenuTab());
     }
 
     private InitializeHead(){

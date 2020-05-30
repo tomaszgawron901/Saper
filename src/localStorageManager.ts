@@ -17,4 +17,12 @@ export default class {
     static SetLastThemeProps(theme: string){
         localStorage.setItem('LastThemeProps', JSON.stringify( {theme} ))
     }
+
+    static GetNick(){
+        return localStorage.getItem('Nick');
+    }
+
+    static SetNick(nick: string){
+        localStorage.setItem('Nick', nick);
+    }
 }

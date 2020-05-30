@@ -7,6 +7,7 @@ import { CellClickTypes } from "./components/boardComponents/Cell";
 import { IGameType, BaseGameTypes, GameTypeNames, BaseGameTypeNames, GameType} from "./logic/gameTypes";
 import { OnSubmitArgs as OnGameTypeSubmitArgs } from "./components/MenuComponents/GameOptionsMenuTab";
 import ThemeOptionsTab, { OnSubmitArgs as OnThemeTypeSubmitArgs } from "./components/MenuComponents/ThemeOptionsMenuTab";
+import RankingOptionsTab, { OnNickSubmitEventArgs } from "./components/MenuComponents/RankingOprionsMenuTab";
 
 import LocalStorageManager from './localStorageManager';
 import GameOptionsTab from "./components/MenuComponents/GameOptionsMenuTab";
@@ -34,6 +35,7 @@ export default class Controller {
         this.InitializeClient();
         this.PullGamePropsFromStorage();
         this.PullThemePropsFromStorage();
+        this.PullNickFromStorage();
         this.InitializeController();
     }
 
@@ -100,11 +102,20 @@ export default class Controller {
         this.theme = ThemeProps.theme;
     }
 
+    private PushNickToStorage(){
+        LocalStorageManager.SetNick(this.client.Nick);
+    }
+
+    private PullNickFromStorage(){
+        this.client.Nick = LocalStorageManager.GetNick();
+    }
+
     private InitializeController(){
         this.InitializeGame();
         this.InitializeGameComponent();
         this.InitializeGameOptionsTab();
         this.InitializeThemeOptionsTab();
+        this.InitializeRankingOptionsTab();
 
     }
 
@@ -175,6 +186,14 @@ export default class Controller {
             this.OnThemeTypeSubmit(args);
         } );
         themeOptionsTab.themeList.Check(this.theme);
+    }
+
+    private InitializeRankingOptionsTab(){
+        const rankingOptionsTab = this.gameContainerElement.Menu.GetItemByName("Ranking").Item as RankingOptionsTab;
+        rankingOptionsTab.onSubmitEventHandler.AddEventListener( (args: OnNickSubmitEventArgs) => {
+            this.OnNickSumbit(args);
+        } );
+        rankingOptionsTab.nickInput.Value = this.client.Nick;
     }
 
     private InitializeGameComponent(){
@@ -300,6 +319,12 @@ export default class Controller {
         this.gameContainerElement.SetTheme(this.theme);
         this.PushThemePropsToStorage();
         this.gameContainerElement.Menu.GetItemByName('Theme').Close();
+    }
+
+    private OnNickSumbit(args: OnNickSubmitEventArgs){
+        this.client.Nick = args.nick;
+        this.gameContainerElement.Menu.GetItemByName('Ranking').Close();
+        this.PushNickToStorage();
     }
 
     private OnWrongArgsSubmit(){
