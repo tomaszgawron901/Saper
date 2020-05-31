@@ -12,7 +12,6 @@ import RankingOptionsTab, { OnNickSubmitEventArgs } from "./components/MenuCompo
 import LocalStorageManager from './localStorageManager';
 import GameOptionsTab from "./components/MenuComponents/GameOptionsMenuTab";
 import Client from "./client";
-import { LogMethod, logProperty } from "./logDecorators";
 import RankingContainer from "./components/rankingComponents/RankingContainer";
 import { IMessage, IRanking, MessageTypes } from "./serverThings/serverRequirements";
 import Images from './images/preLoad';
@@ -45,8 +44,6 @@ export default class Controller {
         this.client.OnReceiveEventHandler.AddEventListener((args: IMessage) => {
             switch(args.type){
                 case "rankingChanged":
-                    console.log(args.data);
-                    
                     this.ranking.Set(args.data as IRanking);
                     break;
                 case "rankingRequest":
@@ -277,7 +274,6 @@ export default class Controller {
         this.gameContainerElement.Board.cells[args.lastOpenedIndex].SetBackgroundColor("red");
     }
 
-    @LogMethod
     private OnGameWin(args: OnWinArgs)
     {
         this.gameContainerElement.Head.NewGameBTN.SetImage(Images['e4'].src);

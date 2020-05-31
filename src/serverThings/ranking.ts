@@ -1,6 +1,5 @@
 import { BaseGameTypeNames } from "../logic/gameTypes";
 import EventHandler, { ICustomerEventHandler } from "../events/EventHandler";
-import rankingStorage from "./rankingStorage";
 
 interface IScoreAndGameType{
     nick: string;
@@ -115,11 +114,6 @@ class RankingManager{
 
     public InitializeRankings(){
         for(let i = 0; i < 3; i++){
-            // let ranking = rankingStorage.GetRanking(i);
-            // if(ranking == null)
-            // {
-            //     ranking = new Ranking(i);
-            // }
             const ranking = new Ranking(i);
             this.rankings[i] = ranking;
             this.rankings[i].OnChangeEventChandler.AddEventListener(() => {this.Changed( this.rankings[i]); });
@@ -128,7 +122,6 @@ class RankingManager{
 
     private Changed(ranking: Ranking){
         this.onChangeEventHandler.ExecuteListeners( {ranking: ranking} );
-        //rankingStorage.PushRanking(ranking);
     }
 
     public Simplify(){

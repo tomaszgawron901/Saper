@@ -1,6 +1,5 @@
 import { BaseGameTypeNames, GameTypeNames} from "./logic/gameTypes";
 import EventHandler, { ICustomerEventHandler } from "./events/EventHandler";
-import { LogMethod } from "./logDecorators";
 import {IScoreAndGameType, IMessage, MessageTypes, IRanking} from './serverThings/serverRequirements';
 
 
@@ -83,7 +82,6 @@ export default class Client{
     this.socket.send(JSON.stringify(message));
   }
 
-  @LogMethod
   private Received(data: string){
     try{
       const message = JSON.parse(data) as IMessage;
