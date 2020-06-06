@@ -30,6 +30,7 @@
     "@overnightjs/logger": "^1.1.10",
     "@types/node": "^14.0.5",
     "@types/ws": "^7.2.4",
-    "body-parser": "^1.19.0"
+    "body-parser": "^1.19.0",
+    "minimist": "^1.2.5"
   }
 }
