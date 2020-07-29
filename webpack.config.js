@@ -6,7 +6,7 @@ const config = {
   entry: "./src/index.ts",
   output: {
     filename: "index.js",
-    path: path.resolve(__dirname, "dist")
+    path: path.resolve(__dirname, "docs")
   },
   resolve: {
     extensions: [".tsx", ".ts", ".js", ".json"]
@@ -70,7 +70,7 @@ const serverConfig = {
     extensions: [ '.tsx', '.ts', '.js'],
   },
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'docs'),
     filename: '[name].js'
   }
 };
